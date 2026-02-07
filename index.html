@@ -1,0 +1,5257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clever</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2e3244 0%, #36224b 100%);
+            background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 80px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar-btn {
+            background: rgb(89, 134, 218);
+            border: none;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            text-align: center;
+            min-height: 45px;
+        }
+
+        .sidebar-btn:hover {
+            background: #79aadb;
+            transform: scale(1.08);
+        }
+
+        .sidebar-btn.empty {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .sidebar-btn.empty:hover {
+            transform: none;
+            background: rgb(89, 134, 218);
+        }
+
+        .main-content {
+            margin-left: 100px;
+            flex: 1;
+            padding: 15px 10px;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .letter-section {
+            margin-bottom: 25px;
+            padding: 0 15px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 60px;
+        }
+
+        .letter-section.empty {
+            opacity: 0.5;
+        }
+
+        .letter-header {
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 3px solid rgba(255,255,255,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .empty-message {
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        input[type="button"] {
+            background: rgb(89, 134, 218);
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            max-width: 700px;
+            color: white;
+            text-align: left;
+        }
+
+        input[type="button"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            background: #79aadb;
+        }
+
+        input[type="button"]:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 15px 5px;
+            }
+            .sidebar-btn {
+                padding: 8px;
+                font-size: 16px;
+            }
+            .main-content {
+                margin-left: 70px;
+            }
+        }
+    </style>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #001a2d 0%, #000 100%);
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: 'Orbitron', sans-serif;
+    color: #00f6ff;
+}
+.sidebar {
+    background: rgba(0,0,32,0.6) !important;
+    backdrop-filter: blur(12px);
+    border-right: 2px solid #00f6ff;
+    box-shadow: 0 0 25px #00f6ff;
+}
+.sidebar-btn {
+    background: transparent !important;
+    border: 1px solid #00f6ff !important;
+    color: #00f6ff !important;
+    text-shadow: 0 0 6px #00f6ff;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.sidebar-btn:hover {
+    background: #00f6ff !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px #00f6ff;
+    transform: scale(1.08);
+}
+.letter-header {
+    text-shadow: 0 0 12px #00f6ff;
+    border-bottom: 2px solid #00f6ff;
+}
+.buttons-container input {
+    background: rgba(0,0,32,0.6) !important;
+    color: #00f6ff !important;
+    border: 1px solid #00f6ff !important;
+    text-shadow: 0 0 8px #00f6ff;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.buttons-container input:hover {
+    background: #00f6ff !important;
+    color: #000 !important;
+    box-shadow: 0 0 25px #00f6ff;
+    transform: translateY(-3px);
+}
+::-webkit-scrollbar-thumb {
+    background: #00f6ff;
+}
+
+/* Music Player Styles */
+.music-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.music-control {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0, 0, 32, 0.8);
+    border: 2px solid #00f6ff;
+    box-shadow: 0 0 20px #00f6ff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.music-control:hover {
+    background: #00f6ff;
+    transform: scale(1.1);
+    box-shadow: 0 0 30px #00f6ff;
+}
+
+.music-control svg {
+    width: 30px;
+    height: 30px;
+    fill: #00f6ff;
+    transition: fill 0.3s ease;
+}
+
+.music-control:hover svg {
+    fill: #000;
+}
+
+.music-control.playing {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px #00f6ff;
+    }
+    50% {
+        box-shadow: 0 0 35px #00f6ff, 0 0 50px #00f6ff;
+    }
+}
+
+/* Entry Overlay Styles */
+.entry-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.entry-overlay.hidden {
+    display: none;
+}
+
+.entry-overlay.fading {
+    animation: fadeOutOverlay 3s ease-out forwards;
+}
+
+@keyframes fadeOutOverlay {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Black screen overlay */
+.black-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 99997;
+    pointer-events: none;
+    transform: translateX(0);
+}
+
+.black-screen.reveal {
+    animation: slideAwayBlack 4s ease-in-out forwards;
+}
+
+@keyframes slideAwayBlack {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Website construction animation */
+.sidebar,
+.main-content,
+.sidebar-btn,
+.letter-section,
+.music-player {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+}
+
+.sidebar.construct {
+    animation: buildElement 0.5s ease-out forwards;
+}
+
+.main-content.construct {
+    animation: buildElement 0.5s ease-out 0.2s forwards;
+}
+
+.sidebar-btn.construct {
+    animation: buildElement 0.3s ease-out forwards;
+}
+
+.letter-section.construct {
+    animation: buildElement 0.4s ease-out forwards;
+}
+
+.music-player.construct {
+    animation: buildElement 0.4s ease-out 1.5s forwards;
+}
+
+@keyframes buildElement {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    50% {
+        transform: scale(1.05) translateY(-5px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Spinning Headphone Bee */
+.headphone-bee {
+    position: fixed;
+    top: 20px;
+    right: 50px;
+    width: 150px;
+    height: auto;
+    z-index: 1001;
+    animation: slowSpin 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes slowSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.entry-content {
+    text-align: center;
+    animation: fadeInUp 1s ease;
+}
+
+.entry-title {
+    font-size: 48px;
+    color: #00f6ff;
+    text-shadow: 0 0 20px #00f6ff, 0 0 40px #00f6ff;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.enter-btn {
+    background: rgba(0, 0, 32, 0.8);
+    border: 2px solid #00f6ff;
+    color: #00f6ff;
+    padding: 20px 50px;
+    font-size: 24px;
+    font-family: 'Orbitron', sans-serif;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 30px #00f6ff;
+    text-shadow: 0 0 10px #00f6ff;
+}
+
+.enter-btn:hover {
+    background: #00f6ff;
+    color: #000;
+    transform: scale(1.1);
+    box-shadow: 0 0 50px #00f6ff, 0 0 80px #00f6ff;
+    text-shadow: none;
+}
+
+.enter-btn:active {
+    transform: scale(1.05);
+}
+
+/* Flying Bee Animation */
+.flying-bee {
+    position: fixed;
+    height: auto;
+    z-index: 99998;
+    pointer-events: none;
+    opacity: 0;
+    left: -400px; /* Start far off screen */
+}
+
+.flying-bee.animate {
+    opacity: 1;
+}
+
+.bee1 { width: 800px; }
+.bee2 { width: 250px; }
+.bee3 { width: 200px; }
+.bee4 { width: 280px; }
+.bee5 { width: 220px; }
+.bee6 { width: 260px; }
+.bee7 { width: 240px; }
+.bee8 { width: 290px; }
+.bee9 { width: 210px; }
+.bee10 { width: 270px; }
+.bee11 { width: 230px; }
+.bee12 { width: 255px; }
+
+.bee1.animate { animation: flyAcross1 3.5s ease-in-out forwards; }
+.bee2.animate { animation: flyAcross2 3.5s ease-in-out 0.3s forwards; }
+.bee3.animate { animation: flyAcross3 2.8s ease-in-out 0.6s forwards; }
+.bee4.animate { animation: flyAcross4 3.2s ease-in-out 0.2s forwards; }
+.bee5.animate { animation: flyAcross5 3.3s ease-in-out 0.8s forwards; }
+.bee6.animate { animation: flyAcross6 3.1s ease-in-out 0.4s forwards; }
+.bee7.animate { animation: flyAcross7 2.9s ease-in-out 1s forwards; }
+.bee8.animate { animation: flyAcross8 3.4s ease-in-out 0.5s forwards; }
+.bee9.animate { animation: flyAcross9 3s ease-in-out 1.2s forwards; }
+.bee10.animate { animation: flyAcross10 3.2s ease-in-out 0.7s forwards; }
+.bee11.animate { animation: flyAcross11 2.8s ease-in-out 0.9s forwards; }
+.bee12.animate { animation: flyAcross12 3.3s ease-in-out 0.1s forwards; }
+
+@keyframes flyAcross1 {
+    0% {
+        left: -800px;
+        top: 35%;
+        transform: translateY(-50%) rotate(-8deg);
+    }
+    50% {
+        top: 30%;
+        transform: translateY(-50%) rotate(3deg);
+    }
+    100% {
+        left: calc(100% + 800px);
+        top: 40%;
+        transform: translateY(-50%) rotate(-4deg);
+    }
+}
+
+@keyframes flyAcross2 {
+    0% {
+        left: -300px;
+        top: 40%;
+        transform: translateY(-50%) rotate(8deg);
+    }
+    50% {
+        top: 35%;
+        transform: translateY(-50%) rotate(-3deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 45%;
+        transform: translateY(-50%) rotate(7deg);
+    }
+}
+
+@keyframes flyAcross3 {
+    0% {
+        left: -300px;
+        top: 60%;
+        transform: translateY(-50%) rotate(-5deg);
+    }
+    50% {
+        top: 55%;
+        transform: translateY(-50%) rotate(8deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 65%;
+        transform: translateY(-50%) rotate(-3deg);
+    }
+}
+
+@keyframes flyAcross4 {
+    0% {
+        left: -300px;
+        top: 30%;
+        transform: translateY(-50%) rotate(12deg);
+    }
+    50% {
+        top: 25%;
+        transform: translateY(-50%) rotate(-6deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 35%;
+        transform: translateY(-50%) rotate(4deg);
+    }
+}
+
+@keyframes flyAcross5 {
+    0% {
+        left: -300px;
+        top: 70%;
+        transform: translateY(-50%) rotate(-8deg);
+    }
+    50% {
+        top: 65%;
+        transform: translateY(-50%) rotate(10deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 75%;
+        transform: translateY(-50%) rotate(-2deg);
+    }
+}
+
+@keyframes flyAcross6 {
+    0% {
+        left: -300px;
+        top: 15%;
+        transform: translateY(-50%) rotate(6deg);
+    }
+    50% {
+        top: 10%;
+        transform: translateY(-50%) rotate(-4deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 20%;
+        transform: translateY(-50%) rotate(8deg);
+    }
+}
+
+@keyframes flyAcross7 {
+    0% {
+        left: -300px;
+        top: 50%;
+        transform: translateY(-50%) rotate(-12deg);
+    }
+    50% {
+        top: 45%;
+        transform: translateY(-50%) rotate(7deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 55%;
+        transform: translateY(-50%) rotate(-5deg);
+    }
+}
+
+@keyframes flyAcross8 {
+    0% {
+        left: -300px;
+        top: 80%;
+        transform: translateY(-50%) rotate(10deg);
+    }
+    50% {
+        top: 75%;
+        transform: translateY(-50%) rotate(-8deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 85%;
+        transform: translateY(-50%) rotate(6deg);
+    }
+}
+
+@keyframes flyAcross9 {
+    0% {
+        left: -300px;
+        top: 25%;
+        transform: translateY(-50%) rotate(-7deg);
+    }
+    50% {
+        top: 20%;
+        transform: translateY(-50%) rotate(9deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 30%;
+        transform: translateY(-50%) rotate(-4deg);
+    }
+}
+
+@keyframes flyAcross10 {
+    0% {
+        left: -300px;
+        top: 55%;
+        transform: translateY(-50%) rotate(11deg);
+    }
+    50% {
+        top: 50%;
+        transform: translateY(-50%) rotate(-5deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 60%;
+        transform: translateY(-50%) rotate(7deg);
+    }
+}
+
+@keyframes flyAcross11 {
+    0% {
+        left: -300px;
+        top: 35%;
+        transform: translateY(-50%) rotate(-9deg);
+    }
+    50% {
+        top: 30%;
+        transform: translateY(-50%) rotate(6deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 40%;
+        transform: translateY(-50%) rotate(-3deg);
+    }
+}
+
+@keyframes flyAcross12 {
+    0% {
+        left: -300px;
+        top: 65%;
+        transform: translateY(-50%) rotate(8deg);
+    }
+    50% {
+        top: 60%;
+        transform: translateY(-50%) rotate(-10deg);
+    }
+    100% {
+        left: calc(100% + 300px);
+        top: 70%;
+        transform: translateY(-50%) rotate(5deg);
+    }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 25px rgba(0, 246, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(0, 246, 255, 0.6);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes starPulse {
+    0%, 100% {
+        text-shadow: 0 0 10px #FFD700;
+    }
+    50% {
+        text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+h1 {
+    animation: fadeInUp 0.8s ease-out, float 3s ease-in-out infinite;
+}
+
+.search-container {
+    animation: fadeInUp 1s ease-out;
+}
+
+.sidebar {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.letter-section {
+    animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.favorites-section, .recent-section {
+    animation: fadeInUp 0.8s ease-out, glow 3s ease-in-out infinite;
+}
+
+.star-icon.favorited {
+    animation: starPulse 2s ease-in-out infinite;
+}
+
+.sidebar-btn {
+    animation: fadeInUp 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+.search-container {
+    max-width: 1000px;
+    margin: 0 auto 20px;
+    padding: 0 15px;
+}
+
+.search-box {
+    width: 100%;
+    padding: 12px 18px;
+    font-size: 16px;
+    border: 2px solid #00f6ff;
+    border-radius: 8px;
+    background: rgba(0, 0, 32, 0.7);
+    color: #00f6ff;
+    font-family: 'Orbitron', sans-serif;
+    box-shadow: 0 0 20px rgba(0, 246, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.search-box:focus {
+    outline: none;
+    box-shadow: 0 0 30px rgba(0, 246, 255, 0.6);
+    background: rgba(0, 0, 32, 0.9);
+}
+
+.search-box::placeholder {
+    color: rgba(0, 246, 255, 0.5);
+}
+
+.favorites-section, .recent-section {
+    max-width: 1000px;
+    margin: 0 auto 25px;
+    padding: 15px;
+    background: rgba(0, 0, 32, 0.6);
+    border: 2px solid #00f6ff;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0, 246, 255, 0.3);
+}
+
+.section-title {
+    color: #00f6ff;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-shadow: 0 0 10px #00f6ff;
+    text-align: center;
+}
+
+.fav-button {
+    position: relative;
+    padding-right: 50px !important;
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.star-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.star-icon:hover {
+    transform: translateY(-50%) scale(1.2);
+}
+
+.star-icon.favorited {
+    color: #FFD700;
+    text-shadow: 0 0 10px #FFD700;
+}
+
+.star-icon:not(.favorited) {
+    color: rgba(0, 246, 255, 0.3);
+}
+
+.empty-state {
+    text-align: center;
+    color: rgba(0, 246, 255, 0.5);
+    font-style: italic;
+    padding: 20px;
+}
+
+.main-content {
+    position: relative;
+    z-index: 10;
+}
+</style>
+
+</head>
+<body>
+    <!-- Entry Overlay -->
+    <div class="entry-overlay" id="entryOverlay">
+        <div class="entry-content">
+            <h1 class="entry-title">CLEVER</h1>
+            <button class="enter-btn" id="enterBtn">ENTER WEBSITE</button>
+        </div>
+    </div>
+
+    <!-- Black Screen Overlay -->
+    <div class="black-screen" id="blackScreen"></div>
+
+    <!-- Flying Bee Swarm -->
+    <img src="assets/beer.png" alt="Leader Bee" class="flying-bee bee1" id="flyingBee1">
+    <img src="assets/photon.jpg" alt="Photon Bee" class="flying-bee bee2" id="flyingBee2">
+    <img src="assets/diamond.jpg" alt="Diamond Bee" class="flying-bee bee3" id="flyingBee3">
+    <img src="assets/gummy.jpg" alt="Gummy Bee" class="flying-bee bee4" id="flyingBee4">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee5" id="flyingBee5">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee6" id="flyingBee6">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee7" id="flyingBee7">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee8" id="flyingBee8">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee9" id="flyingBee9">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee10" id="flyingBee10">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee11" id="flyingBee11">
+    <img src="assets/bee.png" alt="Flying Bee" class="flying-bee bee12" id="flyingBee12">
+
+    <!-- Spinning Headphone Bee -->
+    <img src="assets/headphone-bee.png" alt="DJ Bee" class="headphone-bee">
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Bee's Games</h1>
+
+        <div class="search-container">
+            <input type="text" id="search-box" class="search-box" placeholder="Search for games...">
+        </div>
+
+        <div class="recent-section" id="recent-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="section-title" style="margin-bottom: 0;">⚡ Recently Played</div>
+                <button id="clear-recent-btn" style="background: rgba(255, 0, 0, 0.6); border: 1px solid #ff0000; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 11px; transition: all 0.3s ease; text-shadow: 0 0 8px #ff0000;">Clear</button>
+            </div>
+            <div class="buttons-container" id="recent-container">
+                <div class="empty-state">No games played yet</div>
+            </div>
+        </div>
+
+        <div class="favorites-section" id="favorites-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="section-title" style="margin-bottom: 0;">⭐ Favorites</div>
+                <button id="clear-favorites-btn" style="background: rgba(255, 0, 0, 0.6); border: 1px solid #ff0000; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 11px; transition: all 0.3s ease; text-shadow: 0 0 8px #ff0000;">Clear</button>
+            </div>
+            <div class="buttons-container" id="favorites-container">
+                <div class="empty-state">No favorites yet - click the star on any game!</div>
+            </div>
+        </div>
+
+        
+        <div id="sections-container">
+        </div>
+    </div>
+
+    <script>
+const files = [
+  'cl0emulator',
+  'cl0mediaplayer',
+  'cl1',
+'cl10bullets',
+'cl10minutestildawn',
+'cl12minibattles',
+'cl1on1soccer',
+'cl1v1lol',
+'cl1v1tennis',
+'cl2048',
+'cl2048cupcakes',
+'cl2doom',
+'cl2Dshooting',
+'cl3dash',
+'cl3pandas',
+'cl3pandasbrazil',
+'cl3pandasfantasy',
+'cl3pandasjapan',
+'cl3pandasnight',
+'cl3slices2',
+'cl40xescape',
+'cl4thandgoal',
+'cl500calibercontractz',
+'cl60secondsburgerrun',
+'cl60secondssantarun',
+'cl8ballclassic',
+'cl8ballpool',
+'cl9007199254740992',
+'cl99balls',
+'cl99nightsitf',
+'clabandoned3',
+'clabsolutemadness',
+'clacecombat2',
+'clacecombat3',
+'clacegangstertaxi',
+'clachievementunlocked',
+'clachievmentunlocked',
+'clachievmentunlocked2',
+'clachievmentunlocked3',
+'clachillies',
+'clachillies2',
+'clADarkRoom',
+'cladayintheoffice',
+'clADOFAI',
+'cladvancewars',
+'cladvancewars2',
+'cladventneon',
+'clAdventureCapatalist',
+'cladventurecapitalist',
+'clagariolite',
+'clageofwar',
+'clageofwar2',
+'clagesofconflict',
+'clahoysurvival',
+'clai',
+'clakoopasrevenge',
+'clakoopasrevenge2',
+'clakumanorgaiden',
+'clalienhominid',
+'clalienhominidgba',
+'clalienskyinvasion',
+'clalientransporter',
+'clalienvspredator',
+'clallbossesin1',
+'clallocation',
+'clamaze',
+'clamidstthesky',
+'clamigopancho',
+'clamigopancho2',
+'clamigopancho3',
+'clamigopancho4',
+'clamigopancho5',
+'clamigopancho6',
+'clamigopancho7',
+'clamongus',
+'clamorphous',
+'clancientsins',
+'clangry-birdsspace',
+'clangrybirds-space',
+'clangrybirds',
+'clangrybirdsshowdown',
+'clangrybirdsspace',
+'clanimalcrossingwildworld',
+'clanotherworld',
+'clapotris',
+'clappleshooter',
+'clappleworm',
+'claquaparkio',
+'clarceuslegend',
+'clarcheryworldtour',
+'clarena',
+'clarmormayhem2',
+'clarsonate',
+'clascent',
+'clasmallworldcup',
+'classesmentexaminationque',
+'clasteroids',
+'clasteroidsALT',
+'clattackhole',
+'clavalanche',
+'claviamasters',
+'claviamastersbuggy',
+'clAwesomePirates',
+'clawesomeplanes',
+'clawesometanks',
+'clawesometanks2',
+'clB3313',
+'clbabeltower',
+'clbabychiccoadventure',
+'clbabykaizo',
+'clbabysniperinvietnam',
+'clbackrooms',
+'clbackrooms2D',
+'clbackyardbaseball',
+'clbackyardbaseball09',
+'clbackyardbaseball10',
+'clbackyardsoccer',
+'clbaconmaydie',
+'clbadbodyguards',
+'clbadicecream',
+'clbadmondaysimulator',
+'clbadparenting',
+'clbadpiggies',
+'clbadtimesim',
+'clbadtimesimulator',
+'clbaldidecomp',
+'clbaldisbasics',
+'clbaldisbasicsremaster',
+'clbaldisfunnewschoolultimate',
+'clballblast',
+'clballsandbricks',
+'clballsandbricksgood',
+'clbananasimulator',
+'clbanditgunslingers',
+'clbanjokazooie',
+'clbanjotooie',
+'clbankbreakout2',
+'clbankrobbery2',
+'clbarryhasasecret',
+'clbas',
+'clbaseballbros',
+'clbasketballfrvr',
+'clbasketballlegends',
+'clbasketballstars',
+'clbasketbattle',
+'clbasketbros',
+'clbasketrandom',
+'clbasketrandomgood',
+'clbasketslamdunk2',
+'clbatterup',
+'clbattlekarts',
+'clbattles',
+'clbattlesim',
+'clbattlezone',
+'clbazookaboy',
+'clbballlegend',
+'clbeachboxingsim',
+'clbeamrider',
+'clbearbarians',
+'clbearsus',
+'clben10alienforce',
+'clben10omniverse',
+'clben10protector',
+'clben10racing',
+'clben10ultimatealien',
+'clbergentruck201x',
+'clbfdia5b',
+'clbigicetowertinysquare',
+'clbigneontowertinysquare',
+'clbigshotboxing2',
+'clbigtowertinysquare',
+'clbigtowertinysquare2',
+'clbigtowertinysquare2good',
+'clBig_Time_Butter_Baron',
+'clbindingofisaccsheeptime',
+'clbioevil4',
+'clbitlife',
+'clbitlifeencrypted',
+'clbitplanes',
+'clblackjack',
+'clblackjackbattle',
+'clblackjackhhhh',
+'clblacksmithlab',
+'clblastronaut',
+'clblazedrifter',
+'clbleachvsnaruto',
+'clblightborne',
+'clblobsstory2',
+'clblockblast',
+'clblockcraftparkour',
+'clblockcraftshooter',
+'clblockpost',
+'clblockthepig',
+'clblockydemolitionderby',
+'clblockysnakes',
+'clbloodmoney',
+'clbloodtournament',
+'clbloons',
+'clbloons2',
+'clbloonspp1',
+'clbloonspp2',
+'clbloonspp3',
+'clbloonspp4',
+'clbloonspp5',
+'clbloonsTD1',
+'clbloonsTD2',
+'clbloonsTD3',
+'clbloonsTD4',
+'clbloonsTD5',
+'clbloonsTD6scratch',
+'clbloxorz',
+'clblumgiracers',
+'clBMX2',
+'clbntts',
+'clbobtherobber',
+'clbobtherobber2',
+'clbobtherobber5',
+'clbollybeat',
+'clbomberman',
+'clbomberman2',
+'clbombermanhero',
+'clboomslingers',
+'clbottlecracks',
+'clbottleflip3d',
+'clbounceback',
+'clbouncemasters',
+'clbouncymotors',
+'clBountyOfOne',
+'clbowlalt',
+'clboxhead2playrooms',
+'clboxheadnightmare',
+'clboxinglive-2',
+'clboxinglive2',
+'clboxingrandom',
+'clbrainrot',
+'clbridgerace',
+'clBTD1',
+'clbtd5',
+'clbtts',
+'clbtts2',
+'clbubbleshooter',
+'clbubbleshooterpirate',
+'clbubbletanks',
+'clbubbletanks2',
+'clbubbletanks3',
+'clbubbletanksarenas',
+'clbubbletankstd',
+'clbubsy',
+'clbuckshotroulette',
+'clbuildnowgg',
+'clbunnyland',
+'clburgerandfrights',
+'clburritobison',
+'clburritobison2',
+'clburritobisonlaunchalibre',
+'clburritobisonrevenge',
+'clbushidoblade',
+'clcactusmccoy',
+'clcactusmccoy2',
+'clcannonballs3d',
+'clcannonfodder',
+'clcapybaraclicker',
+'clcarcrash3',
+'clcardrawing',
+'clcareatscar2deluxe',
+'clcarkingarena',
+'clcarmods',
+'clcarstuntsdriving',
+'clCartoonNetworkTableTennisUltimateTournament',
+'clcastlebloodline',
+'clcastlecircleofmoon',
+'clcastlevania',
+'clcastlevania2',
+'clcastlevania3',
+'clcastlevaniaariaofsorrow',
+'clcastlevaniadawnofsorrow',
+'clcastlevanianes',
+'clcastlewarsmodern',
+'clcatmario',
+'clcatmariogood',
+'clcatslovecake2',
+'clcavestory',
+'clceleste',
+'clceleste2',
+'clcellardoor',
+'clchaosfaction2',
+'clcheckers',
+'clcheesechompers3d',
+'clcheshireinachatroom',
+'clchess',
+'clchessclassic',
+'clchibiknight',
+'clchickenscream',
+'clchickenwar',
+'clchipschallenge',
+'clchoppyorc',
+'clchronotrigger',
+'clchuzzle',
+'clCircloO2',
+'clciviballs',
+'clciviballs2',
+'clclashofvikings',
+'clclassof09',
+'clcleanupio',
+'clclearvision',
+'clclearvision2',
+'clclearvision3',
+'clclearvision4',
+'clclearvision5',
+'clclmadnessambulation',
+'clclubbytheseal',
+'clclusterrush',
+'clcoalllcdemo',
+'clcod4',
+'clcodblackopp',
+'clcoddefiance',
+'clcodenamegordon',
+'clcodmodernwarfare',
+'clcodworldatwar',
+'clcoffeemaker',
+'clcolorburst3d',
+'clcolormatch',
+'clcolorwatersort3d',
+'clcombopool',
+'clcommanderkeen4',
+'clcommanderkeen5',
+'clcommanderkeen6',
+'clconkersbadfurday',
+'clcontra',
+'clcontra3',
+'clcookie-clicker',
+'clcookieclicker',
+'clcookieclickercool',
+'clcookieclickergood',
+'clcookingmama',
+'clcookingmama2',
+'clcookingmama3',
+'clcoreball',
+'clcotlk',
+'clcountmastersstickmangames',
+'clcoverorange',
+'clcoverorange2',
+'clcoverorangejourneygangsters',
+'clcoverorangejourneyknights',
+'clcoverorangejourneypirates',
+'clcoverorangejourneyspace',
+'clcoverorangeplayerspack',
+'clcoverorangeplayerspack2',
+'clcoverorangeplayerspack3',
+'clcrankit!',
+'clcrashbandicoot',
+'clcrashbandicoot2',
+'clcrashteamracing',
+'clcrazycars',
+'clcrazycattle3d',
+'clcrazychicken3D',
+'clcrazyfrogracer',
+'clcrazymotorcycle',
+'clcreeperworld2',
+'clcrossyroad',
+'clcrunchball3000',
+'clcs1.6',
+'clcsds',
+'clcsgoclicker',
+'clctgpnitro',
+'clcurveball',
+'clcuttherope',
+'clcuttheropetimetravel',
+'clcyberbungracing',
+'clcybersensation',
+'cldadgame',
+'cldadnme',
+'cldaggerfall',
+'cldanktomb',
+'cldborigins',
+'cldborigins2',
+'cldbsniper',
+'cldbzattacksaiyans',
+'cldbzdevolution',
+'cldbzsuperwarriorssonic',
+'cldeadestate',
+'cldeadlydescent',
+'cldeadplate',
+'cldeadzed',
+'cldeadzed2',
+'cldeathchase',
+'cldeblob2',
+'cldecision',
+'cldecision2',
+'cldecision3',
+'cldecisionmedieval',
+'cldeepersleep',
+'cldeepestsword',
+'cldeepsleep',
+'cldefendyourcastle',
+'cldefendyournuts',
+'cldefendyournuts2',
+'cldeltarune',
+'cldeltatraveler',
+'cldementium',
+'cldemolitionderbycrashracing',
+'cldiablo',
+'cldiamondhollow',
+'cldiamondhollow2',
+'cldiddykong-racing',
+'cldieinthedungeon',
+'cldigdeep',
+'cldigdug',
+'cldigdug2',
+'cldigdug26',
+'cldigtochina',
+'cldinodudes',
+'cldiredecks',
+'cldoblox',
+'cldogeminer',
+'cldogeminer2',
+'cldokidokiliteratureclub',
+'cldonkeykong',
+'cldonkeykong64',
+'cldonkeykongcountry',
+'cldonkeykongcountry2',
+'cldonkeykongcountry3',
+'cldonkeykongnes',
+'cldontescape',
+'cldontescape2',
+'cldontescape3',
+'cldoodlejump',
+'cldoodlejumpgoober',
+'cldoom',
+'cldoom2',
+'cldoom2d',
+'cldoom2dDOS',
+'cldoom3pack',
+'cldoom64',
+'cldoomdos',
+'cldoomemscripten',
+'cldoomps',
+'cldoompsalt',
+'cldoomzio',
+'cldouchebaglife',
+'cldouchebagworkout',
+'cldownthemountain',
+'cldragonballadvance',
+'clDragonBallZTheLegacyofGoku',
+'clDragonQuestIX',
+'cldrawclimber',
+'cldrawtheline',
+'cldreader',
+'cldreadheadparkour',
+'cldriftboss',
+'cldrifthuntersmerge',
+'cldrivemady',
+'cldrivenwild',
+'cldrmario',
+'cldrweedgaster',
+'cldubstep',
+'clduckhunt',
+'clducklfe5',
+'clducklife',
+'clducklife2',
+'clducklife3',
+'clducklife4',
+'clducklifebattle',
+'clducklifespace',
+'clducklingsio',
+'clducktales',
+'cldud',
+'cldukenukem3d',
+'cldumpling',
+'cldungeondeck',
+'cldungeonraid',
+'cldungeonsanddegenerategamblers',
+'cldunkshot',
+'clduskchild',
+'cldyingdreams',
+'cldynamiteheaddy',
+'cleagleride',
+'clearntodie',
+'clearntodie2',
+'clearthbound',
+'clearthbound3',
+'clearthboundsnes',
+'clearthtaken',
+'clearthtaken2',
+'clearthtaken3',
+'clearthwormjim',
+'clearthwormjim2',
+'cledelweiss',
+'cledyscarsimulator',
+'cleffinghail',
+'cleffingmachines',
+'cleffingworms',
+'cleffingzombies',
+'clegg',
+'cleggycar',
+'clelasticface',
+'clelectricman2',
+'clemujs',
+'clenchain',
+'clendlesswar4',
+'clendlesswar5',
+'clendlesswar5wow',
+'clendlesswar7',
+'clenduro',
+'clepicbattlefantasy5',
+'clescalatingduel',
+'clescaperoad-2',
+'clescaperoad',
+'clet',
+'cletrianoddyssey',
+'clevilglitch',
+'clevolution',
+'clexcitebike64',
+'clextremerun3d',
+'clfactoryballs',
+'clfactoryballs2',
+'clfactoryballs3',
+'clfactoryballs4',
+'clfairytalevsonepiece',
+'clfallout',
+'clfamidash',
+'clfancypantsadventure',
+'clfancypantsadventure2',
+'clfancypantsadventure3',
+'clfancysnowboarding',
+'clfashionbattle',
+'clfattygenius',
+'clfearstofathomhomealone',
+'clfeedus',
+'clfeedus2',
+'clfeedus3',
+'clfeedus4',
+'clfeedus5',
+'clFF3',
+'clff6',
+'clffmysticquest',
+'clFFsonic1',
+'clFFsonic2',
+'clFFsonic3',
+'clFFsonic4',
+'clFFsonic5',
+'clFFsonic61',
+'clFFsonic62',
+'clFIFA07',
+'clFIFA10',
+'clFIFA11',
+'clFIFA2000(1)',
+'clfifa2000',
+'clFIFA99',
+'clFIFAinternationalsoccer',
+'clFIFAroadtoworldcup98',
+'clFIFAsoccer06',
+'clFIFAsoccer95',
+'clFIFAsoccer96',
+'clFIFAsoccer97',
+'clFIFAstreet2',
+'clfinalearth2',
+'clfinalfantasy',
+'clfinalfantasyII',
+'clfinalfantasytactics',
+'clfinalfantasyVI',
+'clfinalfantasyVII',
+'clfinalfantasyVIId2',
+'clfinalfantasyVIId3',
+'clfinalfantasyVIItheothertetrr',
+'clfinalninja',
+'clfireblob',
+'clfireboyandwatergirl',
+'clfireboyandwatergirl2',
+'clfireboyandwatergirl3',
+'clfireboyandwatergirl5',
+'clfireboyandwatergirl6',
+'clfireemblem',
+'clfisheatgettingbig',
+'clfisquarium',
+'clfivenightsatbaldisredone',
+'clfivenightsatshrekshotel',
+'clflashsonic',
+'clfloodrunner',
+'clfloodrunner2',
+'clfloodrunner4',
+'clfluidism',
+'clfnac1',
+'clfnac2',
+'clFNAF',
+'clFNAF2',
+'clFNAF3',
+'clFNAF4',
+'clfnaf4halloween',
+'clfnafanimatronics',
+'clfnafps',
+'clfnafsl',
+'clfnafucn',
+'clfnafworldd',
+'clfnfagoti',
+'clfnfbfdi26',
+'clfnfblackbetrayal',
+'clfnfbside',
+'clfnfcamelliarudeblaster',
+'clfnfcrunchin',
+'clfnfdesolation',
+'clfnfdokitakeoverplus',
+'clfnfdropandroll',
+'clfnfdustin',
+'clfnffleetway',
+'clfnffnaf3',
+'clfnfgamebreakerbundle',
+'clfnfgoldenapple',
+'clfnfhex',
+'clfnfholiday',
+'clfnfhorkglorpgloop',
+'clfnfhypnoslullaby',
+'clfnfimposterv4',
+'clfnfindiecross',
+'clfnfmadnesspoop',
+'clfnfmariomadnessdside',
+'clfnfmidfight',
+'clfnfmiku',
+'clfnfmobmod',
+'clfnfneo',
+'clfnfpiggyfield',
+'clfnfpokepastaperdition',
+'clfnfqt',
+'clfnfrevmixed',
+'clfnfrewrite',
+'clfnfselfpaced',
+'clfnfshaggy4keys',
+'clfnfshaggyxmatt',
+'clfnfshucks-v2',
+'clfnfshucksv2',
+'clfnfsky',
+'clfnfsoft',
+'clfnfsonicexe',
+'clfnfsonicexe4',
+'clfnftailsgetstrolled',
+'clfnftricky',
+'clfnfwednesday-infedility',
+'clfnfwhitty',
+'clfnfzardy',
+'clfocus',
+'clfolderdungeon',
+'clfootballbros',
+'clfootballlegends',
+'clforknsausage',
+'clfortzone',
+'clfpa4p1',
+'clfpa4p2',
+'clfreegemas',
+'clfreerider',
+'clfreerider2',
+'clfreerider3',
+'clfridaynightfunkin',
+'clfromrusttoash',
+'clfruitninja',
+'clfunnybattle',
+'clfunnybattle2',
+'clfunnymadracing',
+'clfunnyshooter2',
+'clfunnyshooter22',
+'clfzero',
+'clfzerox',
+'clgalaga',
+'clgameandwatchcollection',
+'clgangstabean',
+'clgangstabean2',
+'clgangsterbros',
+'clgarcello',
+'clgdlite',
+'clgdsubzero',
+'clgeneralchaos',
+'clgenericfightermaybe',
+'clgeometrydashscratch',
+'clgeometryvibes',
+'clgeorgeandtheprinter',
+'clgetawayshootout',
+'clgetontop',
+'clGettothetopalthoughthereisnotop',
+'clgetyoked',
+'clghosttrick',
+'clgimmietheairpod',
+'clgladdihoppers',
+'clgloryhunters',
+'clglover',
+'clgoalsouthafrica',
+'clgobble',
+'clgoingballs',
+'clgolddiggerfrvr',
+'clgoldeneye007',
+'clgoldensun',
+'clgoldensunnds',
+'clGoldenSunTheLostAge',
+'clgoldminer',
+'clgolforbit',
+'clgolfsunday',
+'clgoodbigtowertinysquare',
+'clgoodbigtowertinysquare2',
+'clgoodboygalaxy',
+'clgoodmonkeymart',
+'clgooglebaseball',
+'clgoogledino',
+'clgorescriptclassic',
+'clgrandactionsimulator-ny',
+'clgranddad',
+'clgrandtheftautoadvance',
+'clgranny',
+'clgranny2',
+'clgranny22',
+'clgranny3',
+'clgranturismo',
+'clgranturismo2',
+'clgrassmowing',
+'clgravity',
+'clgravitymod',
+'clgrey-box-testing',
+'clgrimacebirthday',
+'clgrindcraft',
+'clgrn',
+'clgrowagarden',
+'clgrowdenio',
+'clgrowyourgarden',
+'clgta',
+'clgta2',
+'clgta22',
+'clgta2alt',
+'clgtaalt',
+'clgtaalty',
+'clgtachina',
+'clguesstheiranswer',
+'clgun-spin',
+'clgunblood',
+'clguncho',
+'clgunknight',
+'clgunmayhem',
+'clgunmayhem2',
+'clgunmayhem2goof',
+'clgunmayhemredux',
+'clgunnight',
+'clgunsmoke',
+'clgymstack',
+'clhacx',
+'clhajimeippo',
+'clhalflife',
+'clhalocombatdevolved',
+'clhandshakes',
+'clhandsofwar (1)',
+'clhandsofwar(1)',
+'clhandsofwar(2)',
+'clhandsofwar',
+'clhandulum',
+'clhanger2',
+'clhappyroom',
+'clhappywheels',
+'clhardwaretycoon',
+'clHaroldsbadday',
+'clharvestio',
+'clharvestmoon',
+'clharvestmoon64',
+'clhauntthehouse',
+'clheartandsoul',
+'clhei$t',
+'clhelixjump',
+'clhellron',
+'clhelpnobrakes',
+'clhero3flyingrobot',
+'clhextris',
+'clhighstakes',
+'clhighwayracer2',
+'clhighwaytraffic3d',
+'clhillclimbracinglite',
+'clHiNoHomo',
+'clhipsterkickball',
+'clhit8ox',
+'clhitsinglereal',
+'clhl2doom',
+'clhobo',
+'clhobo2',
+'clhobo3',
+'clhobo4',
+'clhobo5',
+'clhobo6',
+'clhobo7',
+'clhobovszombies',
+'clholeio',
+'clhollowknight',
+'clhouseofhazards',
+'clhoverracerdrive',
+'clhumanexpenditureprogram',
+'clhungryknight',
+'clhungrylamu',
+'clhyppersandbox',
+'clicantbelievegoogleflaggedmeforthenameofthefilelol',
+'clice age baby',
+'clicedodo',
+'clicypurplehead',
+'clidlebreakout',
+'clidledice',
+'clidleidlegamedev',
+'clidleminertycoon',
+'clidleminorzamnshes12',
+'climpossiblequiz (1)',
+'climpossiblequiz',
+'climpossiblequiz2',
+'clinclementemerald',
+'clindiantrucksimiulator',
+'clinfinitecraft',
+'clinkgame',
+'clinnkeeper',
+'clinsidestory',
+'clinteractivebuddy',
+'clintoruins',
+'clintospace',
+'clintospace2',
+'clintospace3',
+'clintothedeepweb',
+'clintrusion',
+'cliqball',
+'clironsnout',
+'clironsoldier',
+'cliwbtg',
+'cljacksmith',
+'cljacksmithencryptedorsmthn',
+'cljailbreakobbbobob',
+'cljefflings',
+'cljellydadhero',
+'cljellydrift',
+'cljellytruck',
+'cljellytruckgood',
+'cljetforcegemini',
+'cljetpackjoyride',
+'cljetrush',
+'cljetskiracing',
+'cljohnnytrigger',
+'cljohnnyupgrade',
+'cljourneydownhill',
+'cljsvecx',
+'clJUMP',
+'cljumpingshell',
+'cljustfalllol',
+'cljusthitthebutton',
+'cljustoneboss',
+'clkaizomarioworld',
+'clkalikan',
+'clkapi',
+'clkaratebros',
+'clkarlson',
+'clkartbros',
+'clKenGriffeyJrPresentsMajorLeagueBaseball',
+'clkillerinstinct',
+'clkillover',
+'clkilltheiceagebabyadventure',
+'clkingdomheartsdays',
+'clkingdomheartsrecoded',
+'clkingdomheartsrecodedalt',
+'clkirby64',
+'clkirbyandtheamzingmirror',
+'clkirbysadventure',
+'clkirbysdreamland',
+'clkirbysdreamland3',
+'clkirbysqueaksquad',
+'clkirbysuperstar',
+'clkirbysuperstarultra',
+'clkittencannon',
+'clklifur',
+'clknifehit',
+'clknightmaretower',
+'clkonkrio',
+'clkoopasrevenge',
+'clkourio',
+'cllaceysflashgames',
+'cllastfirered',
+'cllasthorizon',
+'cllaststand',
+'cllaststand2',
+'clleaderstrike',
+'cllearntofly',
+'cllearntofly2',
+'cllearntofly3',
+'cllearntoflyidle',
+'cllegobatman',
+'cllegobatman2superheroes',
+'cllegoindianajones',
+'cllegoindianajones2',
+'cllegoninjago',
+'cllegostarwars',
+'cllemmings',
+'clleveldevil',
+'clleverwarriors',
+'cllightitup',
+'cllilrunmo',
+'cllinerider',
+'cllinktothepast',
+'cllittlerunmo',
+'cllockthedoor',
+'clloderunner',
+'cllonewolf',
+'cllosangelesshark',
+'cllowknight',
+'clloz1',
+'cllozlinkawakening',
+'cllozminishcap',
+'cllozoracleofseasons',
+'cllozspirittracks',
+'clluckyblocks',
+'clmadalinstuntcars',
+'clmadalinstuntcarsgood',
+'clmadalinstuntcarsmultiplayerfixed',
+'clmadden93',
+'clmadden94',
+'clmadden95',
+'clmadden96',
+'clmadden99',
+'clmaddenfootball',
+'clmaddenfootball64',
+'clmaddennfl',
+'clmaddennfl2000',
+'clmaddennfl2001',
+'clmaddennfl2002',
+'clmaddy98',
+'clmadness-retaliation',
+'clmadnessaccelerant',
+'clmadnesscombatdefense',
+'clmadnesscombatnexus',
+'clmadnessgemini',
+'clmadnesshydraulic',
+'clmadnessinteractive',
+'clmadnessoffcolor',
+'clmadnesspremediation',
+'clmadnessretaliation',
+'clmadnesss2010',
+'clmadnessstand',
+'clmadskillsmotocross2',
+'clmadstick',
+'clmadstuntcars2',
+'clmagictiles3',
+'clmajorasmask',
+'clmakesureitsclosed',
+'clmanagod',
+'clmario3',
+'clmarioandluigisuperstarsaga',
+'clmariocombat',
+'clmariogolf',
+'clMarioisMissingDoneRight',
+'clmariokart64',
+'clmariokartds',
+'clmariokartsupercircuit',
+'clmariomadness',
+'clmariominusrabbids',
+'clmariopaint',
+'clmarioparty',
+'clmarioparty2',
+'clmarioparty3',
+'clmariopartyds',
+'clmariosmysterymeat',
+'clmariotennis',
+'clmaskedforcesunlimited',
+'clmastermindworldconquerer',
+'clmatrixrampage',
+'clmattv2',
+'clmcfpsfbhd',
+'clmcraerally',
+'clmeatboy',
+'clmeatboyflash',
+'clmedalofhonor',
+'clmedievalshark',
+'clmedievil',
+'clmegachess',
+'clmegaman',
+'clmegaman2',
+'clmegaman2gba',
+'clmegaman3',
+'clmegaman4',
+'clmegaman5',
+'clmegaman6',
+'clmegaman7',
+'clmegaman8',
+'clmegamanlegends',
+'clmegamanlegends2',
+'clmegamanx',
+'clmegamanx2',
+'clmegamanx3',
+'clmegamanx4',
+'clmegamanzero',
+'clmegamanzx',
+'clmegaminer',
+'clmelonplayground',
+'clmeowuwu',
+'clmergeroundracers',
+'clmetalgear',
+'clmetalgearsolid',
+'clmetalgearsolidps',
+'clmetalslugadvance',
+'clmetalslugmission1',
+'clmetalslugmission2',
+'clMetalSonicHyperdrive',
+'clmetroid',
+'clmetroid2',
+'clmetroidfusion',
+'clmetroidzeromission',
+'clmiamishark',
+'clmicromages',
+'clmightyknight',
+'clmightyknight2',
+'clmimic',
+'clmindscape',
+'clminecraft1-8-8',
+'clminecraftshooter',
+'clmineshooter',
+'clminesweeperplus',
+'clminhero',
+'clminicrossword',
+'clminimart',
+'clminishooters',
+'clminitooth',
+'clmiraginewar',
+'clmisslecommand',
+'clmk4ampedup',
+'clmmwilywars',
+'clmobcontrolhtml5',
+'clmobiusrevolution',
+'clmoneyrush',
+'clmonkeymart',
+'clmonkeymartenc',
+'clmonstertracks',
+'clmonstertruckportstunt',
+'clmortalkombat',
+'clmortalkombat2',
+'clmortalkombat3',
+'clmortalkombatadvance',
+'clmortkom4',
+'clmotherload',
+'clmotoroadrash',
+'clmotox3m2',
+'clmotox3m3',
+'clmotox3mm',
+'clmotox3mpoolparty',
+'clmotox3mspookyland',
+'clmotox3mwinter',
+'clmountainbikeracer',
+'clmrracer',
+'clmspacman',
+'clmultitask',
+'clmutilate-a-doll',
+'clmxoffroadmaster',
+'clmyfriendpedro',
+'clmyfriendpedroarena',
+'clmyteardrop',
+'cln',
+'clnarc',
+'clnaturalselection',
+'clNBAhangtime',
+'clNBAjam',
+'clnbajamTE',
+'clneonblaster',
+'clneonrider',
+'clnesworldchampion',
+'clnetattack',
+'clneverendinglegacy',
+'clnewgroundsrumble',
+'clnewsupermariobros',
+'clNewSuperMarioWorld2AroundtheWorld',
+'clnewyorkshark',
+'clnextdoor',
+'clnflblitz',
+'clnfscarbonowncity',
+'clnfsmostwanted',
+'clnfsporcheunleashed',
+'clnfsunderground',
+'clnfsunderground2',
+'clngon',
+'clnhl2002',
+'clnhlhitz2003',
+'clnickelodeonsuperbrawl2',
+'clNicktoonsFreezeFrameFrenzy',
+'clnightclubshowdown',
+'clnightfire',
+'clnightshade',
+'clnimrods',
+'clninjabrawl',
+'clnintendogslab',
+'clnintendoworldcup',
+'clnitromemustdie',
+'clnomoregameasdsadfagfggdfs',
+'clnoobminer',
+'clnotyourpawn',
+'clnplus',
+'clnubbysnumberfactory',
+'clnullkevin',
+'clNutsandBoltsScrewingPuzzle',
+'clnzp',
+'clobby-99-will-lose',
+'clobbyonlyup',
+'clobeythegame',
+'clocarinaoftime',
+'clofflineparadise',
+'clomeganuggetclicker',
+'clonebitadventure',
+'clonenightasfreddy',
+'clonepiece',
+'clonepiecefighting',
+'clonlyup',
+'cloperius',
+'cloppositeday',
+'clopposumcountry',
+'clorbofcreation',
+'clordinarysonicromhack',
+'cloregontrail',
+'clormmimastickwithclsoitcanberememberedoyeahclalienhominid',
+'closu',
+'clourpleguy',
+'clovo',
+'clovo2',
+'clovodimensions',
+'clovofixed',
+'clpacman',
+'clpacmansuperfast',
+'clpapabakeria',
+'clpapadonut',
+'clpapalouienighthunt2',
+'clpapalouiewhenburgersattack',
+'clpapalouiewhenpizzasattack',
+'clpapalouiewhensundaesattack',
+'clpapapizzagood',
+'clpapapizzagoody',
+'clpapapizzamamamia',
+'clpapasburgerIIIAAAAA',
+'clpapascheeseria',
+'clpapascupcakeria',
+'clpapasfreezeria',
+'clpapashotdoggeria',
+'clpapaspancakeria',
+'clpapaspastaria',
+'clpapasscooperia',
+'clpapassushiria',
+'clpapastacomia',
+'clpapaswingeria',
+'clpaperio',
+'clpaperio3d',
+'clpaperiomania',
+'clpapermario',
+'clpapermariopromode',
+'clpapermariottyd',
+'clparappatherapper',
+'clparappatherapperalt',
+'clparkingfury',
+'clparkingfury2',
+'clparkingfury3',
+'clparkingrush',
+'clpartnersintime',
+'clpeacekeeper',
+'clpeggle',
+'clpenaltykicks',
+'clpenguindiner',
+'clpenguinpass',
+'clpepsiman',
+'clpepsimanalt',
+'clpereelous',
+'clperfectdark',
+'clperfecthotel',
+'clpersona',
+'clpersona2',
+'clpersona2alt',
+'clpersonaalt',
+'clphasma',
+'clpheonixjusticeforall',
+'clpheonixrightaceattorny',
+'clpheonixtrialsandyear',
+'clpheonixtrialsandyeartrhfasd',
+'clpibbyapocalypse',
+'clpico8',
+'clpico8edu',
+'clpicodriller',
+'clpicohot',
+'clpicolife',
+'clpiconightpunkin',
+'clpicosschool',
+'clpicovsbeardx',
+'clpiecesofcake',
+'clpikwip',
+'clpingpongchaos',
+'clpinkbike',
+'clpitfall',
+'clpitof100trials',
+'clpixelbattlegroundsio',
+'clpixelcombat2',
+'clpixelquestlostidols',
+'clpixelshooter',
+'clpixelspeedrun',
+'clpixelwarfare',
+'clpizzapapa',
+'clpizzatower',
+'clplangman',
+'clplantsvszombies',
+'clplazmaburst',
+'clplinko',
+'clplonky',
+'clpogo3D',
+'clpokebattlefact',
+'clpokeblack',
+'clpokeblack2',
+'clpokeblack2alt',
+'clpokeblackalt',
+'clpokeblazeblack2redux',
+'clpokeblue',
+'clpokeclassic',
+'clpokecrown',
+'clpokecrystalclear',
+'clpokediamond',
+'clpokedreamstone',
+'clpokeeliteredux',
+'clpokeelysiuma',
+'clpokeelysiumb',
+'clpokeemeraldenhanced',
+'clpokeemeraldexceeded',
+'clpokeemeraldhorizons',
+'clpokeemeraldrandom',
+'clpokefiregold',
+'clpokeflora',
+'clpokegaia',
+'clpokegschronicles',
+'clpokeheartgold',
+'clpokelightplatinum',
+'clpokeliquidcrysta',
+'clpokemegamoemon',
+'clpokemonamnesia',
+'clpokemonclover',
+'clpokemoncrystal',
+'clpokemonemerald',
+'clpokemonemeraldcrest',
+'clpokemonemeraldimperium',
+'clpokemonemeraldkaizo',
+'clpokemonemeraldmini',
+'clPokemonemeraldrouge',
+'clpokemonemeraldseaglass',
+'clpokemonenergizedemerald',
+'clpokemonevolvedsfdgsdfs',
+'clpokemonfirered',
+'clpokemonfireredandleafgreenplusedition',
+'clpokemonfireredrandomized',
+'clpokemongold',
+'clpokemonkaizoironfirered',
+'clpokemonlazarus',
+'clpokemonleafgreen',
+'clpokemonmodernemerald',
+'clpokemonmysterydungeon',
+'clpokemonquetzal',
+'clpokemonroaringred',
+'clPokemonrocketedition',
+'clpokemonruby',
+'clpokemonsapphire',
+'clpokemonshinsigma',
+'clpokemonsilver',
+'clpokemonsnap',
+'clpokemonstadium',
+'clpokemontowerdefense',
+'clpokemonultimatefusion',
+'clpokemonunbound',
+'clpokemysteryexplorersofsky',
+'clpokeodyssey',
+'clpokepearl',
+'clpokeperfectfirered',
+'clpokepisces',
+'clpokeplatinum',
+'clpokeplatinumrandomized',
+'clpokerechargedpink',
+'clpokerechargedyellow',
+'clpokerecordkeepers',
+'clpokered',
+'clpokerocketedition',
+'clpokerowe',
+'clpokeruby',
+'clpokerunandbun',
+'clpokescorchedsilver',
+'clpokesoulsilver',
+'clpokethepit',
+'clpoketourmaline',
+'clpokeultraviolet',
+'clpokeunovaemerald',
+'clpokevega',
+'clpokevoltwhite2redux',
+'clpokevoyager',
+'clpokewhite',
+'clpokewhite2',
+'clpokewhite2alt',
+'clpokeyellow',
+'clPok monstunningsteel',
+'clpolicepursuit2',
+'clpolishedcrystal',
+'clpoorbunny',
+'clpopeyepapi',
+'clporklike',
+'clportal',
+'clportal2d',
+'clportaldefendersfastbreak',
+'clportaldefendersTD',
+'clportalflash',
+'clporter',
+'clpossessquest',
+'clpostal',
+'clpotatomanseeksthetroof',
+'clpou',
+'clpraxisfighterx',
+'clprebronzeage',
+'clprecivilationbronzeage',
+'clprehistoricshark',
+'clprimary',
+'clpullfrog',
+'clpunchout',
+'clpunchthedrump',
+'clpunchthetrump',
+'clpuppethockey',
+'clpushyourluck',
+'clpuyopuyofever',
+'clpvz',
+'clpvz2',
+'clpvz2gardenless',
+'clpyrotoad',
+'clqbert',
+'clquake2',
+'clquake3',
+'clquake64',
+'clquickieworld',
+'clqwop',
+'clracemaster3d',
+'clracingarena',
+'clradicalred',
+'clradracer',
+'clraftwars',
+'clraftwars2',
+'clragdoll-io',
+'clragdollarchers',
+'clragdollhit',
+'clragdollrunners',
+'clragdollsoccer',
+'clragollhit',
+'clrainbowsix',
+'clrainbowsixalt',
+'clray1',
+'clray2',
+'clrayman',
+'clraze',
+'clraze2',
+'clraze3',
+'clre3',
+'clreachthecore',
+'clrealflightsim',
+'clrebuild',
+'clrebuild2',
+'clrecoil',
+'clredball',
+'clredball2',
+'clredball3',
+'clredball4',
+'clredball4vol2',
+'clredball4vol3',
+'clredhanded',
+'clredtierunner',
+'clredvsblue2',
+'clredvsbluewar',
+'clreignofcentipede',
+'clrenegades',
+'clresidentevil',
+'clresidentevil2',
+'clresizer',
+'clresortempire',
+'clretrobowl',
+'clretrobowlcollege',
+'clretrohighway',
+'clretropingpong',
+'clreturnman',
+'clreturnman2',
+'clreturntoriddleschool',
+'clrevolutionidle',
+'clrhythmheaven',
+'clrhythymymheaven',
+'clricochetkills2',
+'clriddlemiddleschool',
+'clriddleschool',
+'clriddleschool2',
+'clriddleschool3',
+'clriddleschool445544444$$444$444',
+'clriddletransfer',
+'clriddletransfer2',
+'clridgeracer',
+'clroadfighter',
+'clroadoffury',
+'clroadofthedead',
+'clroadofthedead2',
+'clrocketjump',
+'clrocketknightadventures',
+'clrocketleague',
+'clrocketpult',
+'clrocketsoccerderby',
+'clrodha',
+'clroguesoul',
+'clroguesoul2',
+'clrollerballer',
+'clrollingsky',
+'clrollyvortex',
+'clrolypolymonster',
+'clrooftopsnipers',
+'clrooftopsnipers2',
+'clroomclicker',
+'clrotate',
+'clrouletteknight',
+'clruffle',
+'clrun-2',
+'clrun',
+'clrun2',
+'clrun3',
+'clrussiancardriver',
+'clsandboxcity',
+'clsandboxels',
+'clsandsofthecoliseum',
+'clsandtris',
+'clsantarun',
+'clsaszombieassault2',
+'clsaulgoodmanrun',
+'clscarletshift',
+'clscarymazegame',
+'clscrapmetal3',
+'clscrapyarddog',
+'clscribblenauts',
+'clscubabear',
+'clseamongrel',
+'clsecretofmana',
+'clsega2gg',
+'clsentryfortress',
+'clserenitrove',
+'clservingupmadness',
+'clsfk',
+'clsfk2',
+'clsfklaststand',
+'clsfkleague',
+'clshaggy',
+'clshc1',
+'clshc2',
+'clshc3',
+'clshift',
+'clshift2',
+'clshift3',
+'clshinmegamitenseidevilsurvivor',
+'clshortlife',
+'clshredmill',
+'clshrek-2',
+'clshrubnaut',
+'clshwultimatem',
+'clsideeffects',
+'clsidepocket',
+'clsierra7',
+'clsilenthill',
+'clsilenthillalt',
+'clsilk',
+'clsiloshowdow',
+'clSINGLEFILE',
+'clsixwaystodie',
+'clskateit',
+'clskibididibidygyattohiorizzingallovertheplacestillwatermangotheoryfemboydrool',
+'clskibidiinthebackrooms',
+'clskibidishooter',
+'clskong',
+'clskyrace-3d',
+'clsliceitall',
+'clslideinthewoods',
+'clslimelabratory',
+'clslipways',
+'clslitherio',
+'clslope',
+'clslope2player',
+'clslope3',
+'clslopeplus',
+'clslotornot',
+'clslowroads',
+'clsm63redux',
+'clsmadvance2',
+'clsmadvance3',
+'clsmashkarts',
+'clsmashkartsworking',
+'clsmashremix',
+'clsmbc',
+'clsmbcrossover',
+'clsmbgameover',
+'clsnailbob',
+'clsnailbob2',
+'clsnailbob3',
+'clsnailbob4space',
+'clsnailbob5lovestory',
+'clsnakeis',
+'clsnakelike',
+'clsnipershot',
+'clsniperv2',
+'clsnowballio',
+'clsnowrid',
+'clsnowrideee',
+'clsnowrider',
+'clsnowridergoodygumdrops',
+'clsnowriderrrr',
+'clsnowroad',
+'clsoccerbros',
+'clsoccerrandom',
+'clsoccerrandomgood',
+'clsolarsandbox',
+'clsolarsmash',
+'clsolitaire',
+'clsonic1contemporary',
+'clSonic1ScoreRush',
+'clSonic2ScoreRush',
+'clsonic3andknuckles',
+'clsonic3complete',
+'clsonic3dblastdx',
+'clsonicadvance',
+'clsonicadvance2',
+'clsonicadvance2sp',
+'clsonicadvance3',
+'clsonicandashuro',
+'clsonicandknuckles',
+'clsonicbattle',
+'clsoniccd',
+'clsonicclassiccollection',
+'clsonicclassicheroes',
+'clsoniccolors',
+'clsonicdeltaorigins',
+'clsoniceexeog',
+'clsonicerazor',
+'clsonicgg',
+'clSonicHellfireSaga',
+'clsonicjam',
+'clsonicmegamix',
+'clsonicr',
+'clsonicralt',
+'clsonicrevert',
+'clsonicrush',
+'clsonicrushadventure',
+'clsonicspinball',
+'clsonicthehedgehog',
+'clsonicthehedgehog2',
+'clsonicthehedgehog3',
+'clsonny2',
+'clsouljumper',
+'clspacebarclicker',
+'clspacecompany',
+'clspaceinvaders',
+'clspaceiskey',
+'clspaceiskey2',
+'clspaceiskeyxmas',
+'clspacewarsbattleground',
+'clspacewaves',
+'clspeedperclick',
+'clspeedstars',
+'clspewer',
+'clspiralroll',
+'clsprunked',
+'clsprunki',
+'clsprunkiclicker',
+'clsquidplayground',
+'clstackballio',
+'clstacktris',
+'clstackydash',
+'clstarfox',
+'clstarfox64',
+'clstarraiders',
+'clstateio',
+'clstation141',
+'clstationmeltdown',
+'clstationsaturn',
+'clsteakandjake',
+'clstealbrainrotonline',
+'clstealthassassin',
+'clstealthmaster',
+'clsteelempire',
+'clsteelsurge',
+'clstickarchersbattle',
+'clstickfighter',
+'clstickjetchallenge',
+'clstickmanandguns',
+'clstickmanclash',
+'clstickmanduel',
+'clstickmangtacity',
+'clstickmanhook',
+'clStickmanKingdomclash',
+'clstickmankombat2d',
+'clstickmanstealingdiamond',
+'clstickmerge',
+'clstickminairship',
+'clstickminbreakingbank',
+'clstickminescapingprison',
+'clstickminfleecomplex',
+'clstickrpgcomplete',
+'clstickslasher',
+'clstickwar',
+'clstickwar2',
+'clstormthehouse',
+'clstormthehouse3',
+'clstrangejournet',
+'clstreangeropepolice',
+'clstreetfighter2',
+'clstreetfighter2turbo',
+'clstreetfighteralpha3',
+'clstreetfighterumuhsomething',
+'clstreetofrage',
+'clstreetofrage2',
+'clstreetofrage3',
+'clstrikeforceheroes',
+'clstrikeforceheroes2',
+'clstrikeforceheroes3',
+'clstrikerdummies',
+'clstylesavvy',
+'clsubwaysurfersbarcelona',
+'clsubwaysurfersbeijing',
+'clsubwaysurfersberlin',
+'clsubwaysurfersbuenosaires',
+'clsubwaysurfershavana',
+'clsubwaysurfershouston',
+'clsubwaysurfersiceland',
+'clsubwaysurferslondon',
+'clsubwaysurfersmexico',
+'clsubwaysurfersmiami',
+'clsubwaysurfersmonaco',
+'clsubwaysurfersneworeleans',
+'clsubwaysurfersneworleans',
+'clsubwaysurferssanfrancisco (1)',
+'clsubwaysurferssanfrancisco(1)',
+'clsubwaysurferssanfrancisco',
+'clsubwaysurfersstpetersburg',
+'clsubwaysurferswinterholiday',
+'clsubwaysurferszurich',
+'clsugarsugar',
+'clsuika',
+'clsuikapico',
+'clsunandmoon',
+'clsuperbomberman',
+'clsuperbomberman2',
+'clsuperbomberman3',
+'clsuperbomberman4',
+'clsuperbomberman5',
+'clsupercarrush',
+'clsupercastlevaniaVI',
+'clsuperchibiknight',
+'clsupercold',
+'clsuperdarkdeception',
+'clsuperdiagonalmario2',
+'clsuperfighters',
+'clsuperhot',
+'clsuperhotlinemiami',
+'clsuperhouseofdeadninjas',
+'clsuperislandadventure',
+'clsuperkidadventure',
+'clsuperliquidsoccer',
+'clsupermario',
+'clsupermario63',
+'clsupermario64',
+'clsupermario64ds',
+'clsupermarioallstars',
+'clsupermariobros',
+'clsupermariobros2',
+'clsupermariobros2us',
+'clsupermariobros3',
+'clsupermariobros3real',
+'clsupermariokart',
+'clsupermarioland',
+'clsupermarioland2',
+'clsupermariomon',
+'clsupermariorpg',
+'clsupermarioworld',
+'clsupermarioworld2',
+'clSuperMarioWorldThe SecretOfThe7GoldenStatues',
+'clsupermetroid',
+'clsupermonkeyballjr',
+'clsupernoahsark3D',
+'clsuperoliverworld',
+'clsuperpickleballadventure',
+'clsuperpunchout',
+'clsuperpuzzlefighter2turbo',
+'clsuperpuzzlefighter2turboalt',
+'clsuperscribblenauts',
+'clsupersmashbros',
+'clsupersmashflash',
+'clsupersmashflash2',
+'clsupersmashflash2butdifversion',
+'clsupertiltbros',
+'clsupitdept',
+'clsupremeduelist',
+'clsurvevio',
+'clsurvivalracev2',
+'clsushicat',
+'clsushicat2',
+'clsushiunroll',
+'clswerve',
+'clswitchblade',
+'clswordandshieldultimateplus',
+'clswordfight',
+'clswordplay',
+'clswordsandsandals',
+'clswordsandsandals2',
+'clswordsandsouls',
+'clsydneyshark',
+'cltabletanks',
+'cltabletennisworldtour',
+'cltag-',
+'cltagc3',
+'clTaikonoTatsujin',
+'cltaisei',
+'cltakeover',
+'cltallmanrun',
+'cltankmayhem',
+'cltankpixel',
+'cltanukisunset',
+'cltanukisunsetuhhhhhhhh',
+'cltapper',
+'cltaproad',
+'cltastyplanet',
+'cltboilambeternal',
+'cltecmobowl',
+'cltelephonetrouble',
+'cltelocation',
+'cltempest2000',
+'cltempleofboom',
+'cltemplerun2',
+'cltempoverdose',
+'clterra',
+'clterritorialio',
+'clterritorywar',
+'cltetris',
+'cltetrisattack',
+'cltetrisgba',
+'clthanksforremindingmeihadtofixthis',
+'cltheclassroom',
+'cltheclassroom2',
+'cltheclassroom3',
+'clthedeadseat',
+'clthedeepestsleep',
+'cltheenchantedcave2',
+'cltheimpossiblegame',
+'cltheincrediblemachine',
+'clthelaststand',
+'clthelaststandunioncity (1)',
+'clthelaststandunioncity',
+'clthemaninthewindow',
+'clthemepark',
+'clthepit',
+'clthereisnofile',
+'clthermomorph',
+'clthisistheonlylevel',
+'clthisistheonlylevel2',
+'clthisistheonlyleveltoo',
+'clthreegoblets',
+'clthrowapotato',
+'clthrowapotatoagain',
+'clthwack',
+'cltimeshooter2',
+'cltimeshooter3',
+'cltimewarriors',
+'cltinyfishing',
+'cltmnt',
+'cltoastarling',
+'cltoasterball',
+'cltombofthemass',
+'cltommorowandyesterday',
+'cltomodachicollection',
+'cltonyhawkskater2',
+'cltonyhawkskater4',
+'cltonyhawksunderground',
+'cltoomanytypes',
+'cltopspeedracing3d',
+'cltosstheturtle',
+'cltotm',
+'cltowerblocks',
+'cltowercrash3d',
+'cltownscraper',
+'cltrace',
+'cltrafficjam3d',
+'cltrapthecat',
+'cltrechoroustrials',
+'cltrechoroustrialspart2',
+'cltriachnid',
+'cltripleplay2000',
+'cltriviacrack',
+'cltrollfacequest1',
+'cltrollfacequest10',
+'cltrollfacequest11',
+'cltrollfacequest12',
+'cltrollfacequest13',
+'cltrollfacequest2',
+'cltrollfacequest3',
+'cltrollfacequest4',
+'cltrollfacequest5',
+'cltrollfacequest6',
+'cltrollfacequest7',
+'cltrollfacequest8',
+'cltrollfacequest9',
+'cltrucksim',
+'cltubejumpers',
+'cltunnelrush',
+'cltunnelrushbetter',
+'clturbostars',
+'clturokdinosaurhunter',
+'cltwinshot (1)',
+'cltwinshot(1)',
+'cltwinshot',
+'cltwistedmetal',
+'cltwistedmetal2',
+'cltwoball3d',
+'clucds',
+'cluckyblockobbyEUOPHRATESRIVER',
+'clufoswampoddysey',
+'clultimateassassian2',
+'clultimateassassian3',
+'clUltimatecardrivingsimulator',
+'clultimatemortalkombat',
+'clultimatemortalkombat3',
+'clultrakill',
+'clumstickmangameidkiforgor',
+'cluncannycatgolf',
+'clunderneath',
+'clundertaler',
+'clundertaleyellow',
+'clunfairmario',
+'clunfairmarioworkquestionmark',
+'clunfairundyne',
+'clunicyclehero',
+'cluno',
+'cluntime',
+'clupgradecomplete',
+'clupgradecomplete2',
+'clupslash',
+'clUZG',
+'clvampiresurvivors',
+'clvanguard',
+'clvaportrails',
+'clvex',
+'clvex2',
+'clvex3',
+'clvex3xmas',
+'clvex4',
+'clvex5',
+'clvex6',
+'clvex7',
+'clvex8',
+'clvexchallenges',
+'clvexx3m',
+'clvexx3m2',
+'clvillager',
+'clvincentmansionofthedead',
+'clvisitor',
+'clvolleyrandom',
+'clvollyballchallenge',
+'clvvvvvv',
+'clwaluigitacostand',
+'clwarfare1944',
+'clwarioland4',
+'clwariowarediy',
+'clwariowareinc',
+'clwartheknight',
+'clwaterpoolio',
+'clwavedash',
+'clwaverace64',
+'clwaverun',
+'clwebecomewhatwebehold',
+'clwebfishing',
+'clweltling',
+'clwermhole',
+'clwhackthetheif',
+'clwhackyourboss',
+'clwhackyourcomputer',
+'clwheeliebike',
+'clwheely',
+'clwheely2',
+'clwheely3',
+'clwheely4',
+'clwheely5',
+'clwheely6',
+'clwheely7',
+'clwheely8',
+'clwindowsdoors',
+'clwinterfalling',
+'clwipeout2097',
+'clwipeout2097alt',
+'clwitchcrafttd',
+'clwolfenstein',
+'clwolfenstein3d',
+'clwoodworm',
+'clwordle',
+'clworldcup98',
+'clworldshardestgame',
+'clworldshardestgame2',
+'clworldshardestgame3',
+'clworldshardestgame4',
+'clwrassling',
+'clwrestlebros',
+'clXevious',
+'clyanderesimulator',
+'clyarsrevenge',
+'clyellow',
+'clYoshisStrangeQuest',
+'clyouarelucky',
+'clyouvs100skibidi(1)',
+'clyouvs100skibidi',
+'clyumenikki',
+'clzelda2thelegendoflink',
+'clzeldaminishcap',
+'clzenword',
+'clzombieexploder',
+'clzombieroad',
+'clzombierush',
+'clzombiesatemyneighboors',
+'clzombopaclypse2',
+'clzombotron',
+'clzombotron2',
+'clzombotronreboot',
+'clzrist',
+'clzuma',
+'clzumashooter',
+'cl oo',
+'cl?',
+'codeorg',
+'Dragonxclient',
+'Eaglercraft-Alpha-1.2.6-Offline',
+'Eaglercraft-Beta-1.3-Offline',
+'Eaglercraft-Indev-Offline (1)',
+'Eaglercraft-Indev-Offline',
+'eaglercraft.1.5.2',
+'EaglercraftL_1.9_v0_7_0_Offline_Signed',
+'EaglercraftX 1.8.8(u29)',
+'EaglercraftZ_1.11.2',
+'filenames.txt',
+'Helios-Offline (1)',
+'marbleracer',
+'mariobuilder64',
+'Minceraft-I-NotMine_V6',
+'mortalkombat4',
+'polytrackbutnotflagged',
+'rocketknight2',
+'sandstone',
+'sdf',
+'snowbros',
+'superdromebugs',
+'vvvvvv',
+'wilywars'
+];
+
+        function generateAllSections() {
+            const allChars = ['tools','1','2','3','4','5','6','7','8','9',
+                            'A','B','C','D','E','F','G','H','I','J','K','L','M',
+                            'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+            
+            const filesByChar = {};
+            allChars.forEach(char => {
+                filesByChar[char] = [];
+            });
+
+            files.forEach(file => {
+                const lower = file.toLowerCase();
+                if (lower.startsWith('cl')) {
+                    const afterCl = lower.substring(2);
+                    if (afterCl.length > 0) {
+                        let firstChar = afterCl[0].toUpperCase();
+                        // Map '0' to 'tools'
+                        if (firstChar === '0') {
+                            firstChar = 'tools';
+                        }
+                        if (filesByChar[firstChar]) {
+                            filesByChar[firstChar].push(file);
+                        }
+                    }
+                }
+            });
+
+            const container = document.getElementById('sections-container');
+            allChars.forEach((char, index) => {
+                const section = document.createElement('div');
+                section.className = 'letter-section';
+                section.id = `section-${char}`;
+                section.style.animationDelay = `${index * 0.05}s`;
+                
+                const header = document.createElement('div');
+                header.className = 'letter-header';
+                header.textContent = char;
+                section.appendChild(header);
+
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'buttons-container';
+
+                if (filesByChar[char].length > 0) {
+                    filesByChar[char].forEach((file, btnIndex) => {
+                        const wrapper = document.createElement('div');
+                        wrapper.style.position = 'relative';
+                        wrapper.style.width = '100%';
+                        
+                        const btn = document.createElement('input');
+                        btn.type = 'button';
+                        btn.value = file;
+                        btn.className = 'fav-button';
+                        btn.style.animationDelay = `${(index * 0.05) + (btnIndex * 0.03)}s`;
+                        
+                        const star = document.createElement('span');
+                        star.className = 'star-icon';
+                        star.innerHTML = '★';
+                        
+                        // Check if favorited
+                        const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                        if (favorites.includes(file)) {
+                            star.classList.add('favorited');
+                        }
+                        
+                        star.onclick = (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            toggleFavorite(file, star);
+                        };
+                        
+                        // Prevent button click when clicking star area
+                        star.onmousedown = (e) => {
+                            e.stopPropagation();
+                        };
+                        
+                        star.onmouseup = (e) => {
+                            e.stopPropagation();
+                        };
+                        
+                        btn.onclick = (e) => {
+                            // Check if click was on the star
+                            if (e.target.classList && e.target.classList.contains('star-icon')) {
+                                return;
+                            }
+                            
+                            addToRecent(file);
+
+                            // Special handler for emulator
+                            if (file === 'cl0emulator') {
+                                openEmulator();
+                                return;
+                            }
+
+                            // Special handler for media player
+                            if (file === 'cl0mediaplayer') {
+                                openMediaPlayer();
+                                return;
+                            }
+
+                            function normalizeFileName(name) {
+                                if (name.includes('.') && name.lastIndexOf('.') > 0) return name;
+                                return name + '.html';
+                            }
+
+                            const normalized = normalizeFileName(file);
+                            const encoded = encodeURIComponent(normalized);
+
+                            fetch(`https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encoded}?t=${Date.now()}`)
+                                .then(response => response.text())
+                                .then(text => {
+                                    const newWin = window.open("about:blank", "_blank");
+                                    if (newWin) {
+                                        newWin.document.open();
+                                        newWin.document.write(text);
+                                        newWin.document.close();
+                                    }
+                                });
+                        };
+                        btn.style.width = '100%';
+                        btn.style.height = '100%';
+                        btn.style.fontSize = '100%';
+                        
+                        wrapper.appendChild(btn);
+                        wrapper.appendChild(star);
+                        buttonsContainer.appendChild(wrapper);
+                    });
+                } else {
+                    section.classList.add('empty');
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'empty-message';
+                    emptyMsg.textContent = 'No files';
+                    buttonsContainer.appendChild(emptyMsg);
+                }
+
+                section.appendChild(buttonsContainer);
+                container.appendChild(section);
+            });
+
+            generateSidebar(allChars, filesByChar);
+        }
+
+        function generateSidebar(allChars, filesByChar) {
+            const sidebar = document.getElementById('sidebar');
+            
+            allChars.forEach((char, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'sidebar-btn';
+                btn.textContent = char;
+                btn.style.animationDelay = `${index * 0.02}s`;
+                
+                if (filesByChar[char].length === 0) {
+                    btn.classList.add('empty');
+                } else {
+                    btn.onclick = () => {
+                        const section = document.getElementById(`section-${char}`);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    };
+                }
+                
+                sidebar.appendChild(btn);
+            });
+        }
+        window.addEventListener('DOMContentLoaded', generateAllSections);
+
+        // Media Player function
+        function openMediaPlayer() {
+            const playerHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Media Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Orbitron', Arial, sans-serif;
+            background: radial-gradient(ellipse at bottom, #001a2d 0%, #000 100%);
+            color: #00f6ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(0, 0, 32, 0.8);
+            border: 2px solid #00f6ff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px #00f6ff;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px #00f6ff;
+            font-size: 2.5em;
+        }
+        .upload-area {
+            border: 3px dashed #00f6ff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            background: rgba(0, 246, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 246, 255, 0.3);
+        }
+        .upload-area.dragover {
+            background: rgba(0, 246, 255, 0.2);
+            border-color: #00ffff;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .upload-text {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .supported-formats {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        #player-container {
+            display: none;
+            margin-top: 20px;
+        }
+        video, audio {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+            background: #000;
+            border: 2px solid #00f6ff;
+            box-shadow: 0 0 20px rgba(0, 246, 255, 0.5);
+        }
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 246, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid #00f6ff;
+        }
+        .file-info p {
+            margin: 5px 0;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        button {
+            background: transparent;
+            border: 1px solid #00f6ff;
+            color: #00f6ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', Arial, sans-serif;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 8px #00f6ff;
+        }
+        button:hover {
+            background: #00f6ff;
+            color: #000;
+            box-shadow: 0 0 15px #00f6ff;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Media Player</h1>
+        
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-text">
+                📁 Click or Drag & Drop Your Media File
+            </div>
+            <div class="supported-formats">
+                Supports: MP4, MKV, WebM, AVI, MP3, WAV, OGG, FLAC
+            </div>
+            <input type="file" id="fileInput" accept="video/*,audio/*">
+        </div>
+        
+        <div id="player-container">
+            <div id="media-wrapper"></div>
+            <div class="file-info" id="fileInfo"></div>
+            <div class="controls">
+                <button id="newFile">Load New File</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const playerContainer = document.getElementById('player-container');
+        const mediaWrapper = document.getElementById('media-wrapper');
+        const fileInfo = document.getElementById('fileInfo');
+        const newFileBtn = document.getElementById('newFile');
+        
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                loadFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                loadFile(e.target.files[0]);
+            }
+        });
+        
+        newFileBtn.addEventListener('click', () => {
+            playerContainer.style.display = 'none';
+            uploadArea.style.display = 'block';
+            mediaWrapper.innerHTML = '';
+            fileInput.value = '';
+        });
+        
+        function loadFile(file) {
+            const url = URL.createObjectURL(file);
+            const fileType = file.type;
+            const fileName = file.name;
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            
+            mediaWrapper.innerHTML = '';
+            
+            if (fileType.startsWith('video/')) {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.src = url;
+                mediaWrapper.appendChild(video);
+            } else if (fileType.startsWith('audio/')) {
+                const audio = document.createElement('audio');
+                audio.controls = true;
+                audio.autoplay = true;
+                audio.src = url;
+                mediaWrapper.appendChild(audio);
+            }
+            
+            fileInfo.innerHTML = '<p><strong>File:</strong> ' + fileName + '</p>' +
+                '<p><strong>Type:</strong> ' + (fileType || 'Unknown') + '</p>' +
+                '<p><strong>Size:</strong> ' + fileSize + ' MB</p>';
+            
+            uploadArea.style.display = 'none';
+            playerContainer.style.display = 'block';
+        }
+    <\/script>
+</body>
+</html>
+            `;
+            
+            const newWin = window.open("about:blank", "_blank");
+            if (newWin) {
+                newWin.document.open();
+                newWin.document.write(playerHTML);
+                newWin.document.close();
+            }
+        }
+
+        // Emulator function
+        function openEmulator() {
+            const emulatorHTML = `<!DOCTYPE html>
+<html>
+    <head>
+        <title>EmulatorJS | Demo</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+        <link rel="apple-touch-icon" href="img/icon.png" />
+        <link rel="manifest" href="manifest.json" />
+        <meta name="theme-color" content="#000"/>
+        <style>
+            body, html {
+                height: 100%;
+                background-color: black;
+                color: white;
+            }
+
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+
+            body, #box, #top {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            #box {
+                color: #aaa;
+                height: 20em;
+                width: 30em;
+                max-width: 80%;
+                max-height: 80%;
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                position: relative;
+                flex-direction: column;
+                transition-duration: 0.2s;
+                overflow: hidden;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 5px;
+                padding: 10px;
+                text-align: center;
+            }
+
+            #box:hover, #box[drag] {
+                border-color: #38f;
+                color: #ddd
+            }
+
+            #input {
+                cursor: pointer;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+            }
+
+            #display {
+                width: 100%;
+                height: 100%
+            }
+
+            select, button {
+                padding: 0 0.4em;
+                margin: 0.5em 0.1em;
+                width: 15em;
+                max-width: 100%;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 16px;
+                background-color: #444;
+                color: #aaa;
+                border-radius: 0.4em;
+                border: 1px solid #555;
+                cursor: pointer;
+                transition-duration: 0.2s;
+                vertical-align:top;
+                height: 2.5em;
+            }
+
+            select:hover, button:hover {
+                background-color: #666;
+                color: #ddd
+            }
+
+            .logo {
+                width: 130px;
+                height: 130px;
+                filter: drop-shadow(0 0 10px white);
+            }
+
+            #top, #version {
+                margin: 5px;
+            }
+
+            #version button {
+                fill: #aaa;
+                width: auto;
+                padding: 0.2em 0.3em;
+                text-align: center;
+                margin: 0.5em 0.1em;
+            }
+            #version svg {
+                margin-top: 0.05em;
+                margin-left: 0.05em;
+                width: 1.8em;
+            }
+            .popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 100%;
+                height: 100%;
+                z-index: 2000;
+                visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
+            .popup .content {
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                padding: 1em;
+                max-width: 80%;
+                max-height: 80%;
+                min-width: 30%;
+                width: min-content;
+                position: fixed;
+            }
+            .show {
+                visibility: visible;
+            }
+            .popup-overlay {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                visibility: hidden;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+                opacity: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            .show ~ .popup-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
+            .popup-animate .content {
+                -webkit-transform: translateX(-50%) translateY(-50%) scale(0.7);
+                -ms-transform: translateX(-50%) translateY(-50%) scale(0.7);
+                transform: translateX(-50%) translateY(-50%) scale(0.7);
+                opacity: 0;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            .show.popup-animate .content {
+                -webkit-transform: translateX(-50%) translateY(-50%) scale(1);
+                -ms-transform: translateX(-50%) translateY(-50%) scale(1);
+                transform: translateX(-50%) translateY(-50%) scale(1);
+                opacity: 1;
+            }
+            .popup .title, .popup .options p {
+                display: flex;
+                align-items: center;
+            }
+            .popup .options p {
+                margin: 1em 0;
+                font-size: 18px;
+            }
+            .popup .title h1 {
+                margin: 0 0 0.3em;
+                font-size: 48px;
+            }
+            .popup .options button {
+                width: auto;
+                padding: 0 0.5em;
+                font-weight: bold;
+                margin: 0 0.5em;
+                font-size: 14px;
+                border-radius: 0.4em;
+            }
+            .popup .bottom {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 1em;
+            }
+            #installbox {
+                display: inline-flex;
+                align-items: baseline;
+            }
+            #installboxtext {
+                margin-top: 0 !important;
+            }
+            button:disabled {
+                background-color: #666;
+                color: #aaa;
+                cursor: not-allowed;
+            }
+            .hide {
+                display: none !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="top">
+            <h1>EmulatorJS Demo</h1>
+            <img src="img/logo-light.png" alt="Logo" class="logo">
+        </div>
+        <div id="box">
+            <input type="file" id="input">
+            Drag ROM file or click here
+        </div>
+        <div id="version">
+            <select id="version-select"></select>
+            <button id="download" class="hide" onclick="downloadversion()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 6.854-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5a.5.5 0 0 1 1 0v3.793l1.146-1.147a.5.5 0 0 1 .708.708"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg"viewBox="0 0 16 16">
+                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 4.854-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                </svg>
+            </button>
+            <button id="settings" onclick="openSettings()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                </svg>
+            </button>
+        </div>
+        <div id="popup-settings" class="popup popup-animate">
+            <div class="content">
+                <div class="title">
+                    <h1>Settings</h1>
+                </div>
+                <div class="options">
+                    <p id="offline-status">Offline Status: CHECKING</p>
+                    <p>Offline Cores will be available soon.</p>
+                    <p class="hide">Remove All Saved Versions: <button id="remove-version" onclick="removeallsaved()">Remove All</button></p>
+                    <div id="installbox"><p id="installboxtext">Install PWA:</p> <button id="install">Install</button></div>
+                    </div>
+                <div class="bottom">
+                    <button onclick="closeSettings()">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="popup-overlay"></div>
+        <script>
+            if ("serviceWorker" in navigator) {
+                const req = navigator.serviceWorker.register("sw.js");
+                console.log(req);
+            };
+            loadJSON("/versions", (response) => {
+                if (!response) {
+                    loadJSON("https://cdn.emulatorjs.org/versions.json", resp => loadVersions(resp));
+                    document.getElementById("offline-status").textContent = "Offline Status: NOT INSTALLED";
+                } else {
+                    loadVersions(response);
+                    document.getElementById("offline-status").textContent = "Offline Status: READY";
+                }
+            });
+            function loadVersions(response) {
+                const version_select = document.getElementById("version-select");
+                var versions = JSON.parse(response);
+                version_select.innerHTML = "";
+                addOptions(version_select, versions.releases, versions.default, versions.github);
+                addOptions(version_select, versions.versions, versions.default);
+                version_select.addEventListener("change", () => {
+                    localStorage.setItem("version", version_select[version_select.selectedIndex].textContent);
+                    window.cdn = "https://cdn.emulatorjs.org/" + version_select[version_select.selectedIndex].value + "data/";
+                });
+            }
+            input.addEventListener("change", async () => {
+                const url = input.files[0];
+                const parts = input.files[0].name.split(".");
+
+                const core = await (async (ext) => {
+                    if (["fds", "nes", "unif", "unf"].includes(ext))
+                        return "nes"
+
+                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
+                        return "snes"
+
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
+
+                    if (["pce"].includes(ext))
+                        return "pce"
+
+                    if (["ngp", "ngc"].includes(ext))
+                        return "ngp"
+
+                    if (["ws", "wsc"].includes(ext))
+                        return "ws"
+
+                    if (["col", "cv"].includes(ext))
+                        return "coleco"
+
+                    if (["d64"].includes(ext))
+                        return "vice_x64"
+
+                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
+                        return ext
+
+                    return await new Promise(resolve => {
+                        const cores = {
+                            "Nintendo 64": "n64",
+                            "Nintendo Game Boy": "gb",
+                            "Nintendo Game Boy Advance": "gba",
+                            "Nintendo DS": "nds",
+                            "Nintendo Entertainment System": "nes",
+                            "Super Nintendo Entertainment System": "snes",
+                            "PlayStation": "psx",
+                            "Virtual Boy": "vb",
+                            "Sega Mega Drive": "segaMD",
+                            "Sega Master System": "segaMS",
+                            "Sega CD": "segaCD",
+                            "Atari Lynx": "lynx",
+                            "Sega 32X": "sega32x",
+                            "Atari Jaguar": "jaguar",
+                            "Sega Game Gear": "segaGG",
+                            "Sega Saturn": "segaSaturn",
+                            "Atari 7800": "atari7800",
+                            "Atari 2600": "atari2600",
+                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
+                            "NEC PC-FX": "pcfx",
+                            "SNK NeoGeo Pocket (Color)": "ngp",
+                            "Bandai WonderSwan (Color)": "ws",
+                            "ColecoVision": "coleco",
+                            "Commodore 64": "vice_x64",
+                            "PlayStation Portable": "psp"
+                        }
+
+                        const button = document.createElement("button")
+                        const select = document.createElement("select")
+
+                        for (const type in cores) {
+                            const option = document.createElement("option")
+
+                            option.value = cores[type]
+                            option.textContent = type
+                            select.appendChild(option)
+                        }
+
+                        button.onclick = () => resolve(select[select.selectedIndex].value)
+                        button.textContent = "Load game"
+                        box.innerHTML = ""
+
+                        box.appendChild(select)
+                        box.appendChild(button)
+                    })
+                })(parts.pop())
+
+                const div = document.createElement("div")
+                const sub = document.createElement("div")
+                const script = document.createElement("script")
+
+                sub.id = "game"
+                div.id = "display"
+
+                const top = document.getElementById("top");
+                const version = document.getElementById("version");
+                top.remove();
+                version.remove();
+                box.remove();
+                div.appendChild(sub)
+                document.body.appendChild(div)
+
+                const cdn = window.cdn || "https://cdn.emulatorjs.org/stable/data/"
+
+                window.EJS_player = "#game";
+                window.EJS_gameName = parts.shift();
+                window.EJS_biosUrl = "";
+                window.EJS_gameUrl = url;
+                window.EJS_core = core;
+                window.EJS_pathtodata = cdn;
+                window.EJS_startOnLoaded = true;
+                window.EJS_AdUrl = "https://ads.emulatorjs.org/";
+                if (core === "psp") {
+                    window.EJS_threads = true;
+                }
+                window.EJS_ready = function() {
+                    detectAdBlock("data:text/html;base64,PGh0bWw+PHN0eWxlPiNhZGJsb2Nre2JhY2tncm91bmQtY29sb3I6cmdiYSgwLDAsMCwuOCk7cG9zaXRpb246Zml4ZWQ7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTt0b3A6MDtsZWZ0OjA7ei1pbmRleDoxMDAwO3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiNmZmZ9Ym9keSxodG1se2JhY2tncm91bmQtY29sb3I6dHJhbnNwYXJlbnR9PC9zdHlsZT48Ym9keSBzdHlsZT0ibWFyZ2luOjAiPjxkaXYgaWQ9ImFkYmxvY2siPjxoMT5IaSBBZGJsb2NrIFVzZXIhPC9oMT48cD5BZHMgb24gdGhpcyBwYWdlIG1heSBjb21lIGFuZCBnbyBkZXBlbmRpbmcgb24gaG93IG1hbnkgcGVvcGxlIGFyZSBmdW5kaW5nIHRoaXMgcHJvamVjdC48YnI+WW91IGNhbiBoZWxwIGZ1bmQgdGhpcyBwcm9qZWN0IG9uPGEgaHJlZj0iaHR0cHM6Ly9wYXRyZW9uLmNvbS9FbXVsYXRvckpTIj5wYXRyZW9uPC9hPjwvcD48L2Rpdj48L2JvZHk+PC9odG1sPg==");
+                }
+                
+                script.src = cdn + "loader.js";
+                document.body.appendChild(script);
+            });
+
+            box.ondragover = () => box.setAttribute("drag", true);
+            box.ondragleave = () => box.removeAttribute("drag");
+
+            function detectAdBlock(url) {
+                let adBlockEnabled = false;
+                try {
+                    const adframe = document.querySelector('iframe[src="'+window.EJS_AdUrl+'"]');
+                    var adpage = adframe.contentWindow.document;
+                    window.EJS_AdUrl = adframe.src;
+                    if (!adpage) {
+                        adBlockEnabled = true;
+                    }
+                } catch (e) {
+                    adBlockEnabled = true;
+                }
+                if (adBlockEnabled) {
+                    window.EJS_adBlocked(url);
+                    
+                }
+            }
+
+            function loadJSON(url, callback) {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.open('GET', url, true);
+
+                xobj.onreadystatechange = function () {
+                    if (xobj.readyState === 4) {
+                        if (xobj.status === 200) {
+                            callback(xobj.responseText);
+                        } else {
+                            callback(null);
+                        }
+                    }
+                };
+
+                xobj.send();
+            }
+
+
+            function addOptions(select, options, default_option, github) {
+                for (const version in options) {
+                    const option = document.createElement("option");
+                    option.value = options[version];
+                    if (version == "stable"){
+                        option.textContent = "stable ("+github+")";
+                    } else {
+                        option.textContent = version;
+                    }
+                    if (localStorage.getItem("version") && localStorage.getItem("version") === version) {
+                        option.selected = true;
+                        window.cdn = "https://cdn.emulatorjs.org/" + option.value + "data/";
+                    } else if (version.includes(default_option)) {
+                        option.selected = true;
+                        window.cdn = "https://cdn.emulatorjs.org/" + option.value + "data/";
+                    }
+                    select.appendChild(option);
+                }
+            }
+
+            function openSettings() {
+                document.getElementById("popup-settings").classList.add("show");
+                if (localStorage.getItem("pwa") == "false") {
+                    checkinstall();
+                }
+            }
+
+            function closeSettings() {
+                document.getElementById("popup-settings").classList.remove("show");
+            }
+
+            let installPrompt = null;
+            const installButton = document.querySelector("#install");
+            const installBox = document.querySelector("#installbox");
+            const installBoxText = document.querySelector("#installboxtext");
+            localStorage.setItem("pwa", "false");
+
+            window.addEventListener("beforeinstallprompt", (event) => {
+                event.preventDefault();
+                installPrompt = event;
+                localStorage.setItem("pwa", "true");
+                installButton.textContent = "Install";
+                installButton.disabled = false;
+                console.log("Supported");
+            });
+            installButton.addEventListener("click", async () => {
+                if (!installPrompt) {
+                    return;
+                }
+                const result = await installPrompt.prompt();
+                console.log('Install prompt was: ' + result.outcome);
+                installPrompt = null;
+            });
+            function checkinstall(overide) {
+                console.log("Checking install");
+                if (navigator.userAgent.includes("Firefox") || (navigator.userAgent.includes("OPR") && !navigator.userAgent.includes("Mobile"))) {
+                    installButton.style.display = "none";
+                    installBoxText.innerHTML = "PWA's are not supported on this browser.";
+                    return;
+                }
+                if (window.matchMedia('(display-mode: standalone)').matches || overide) {
+                    installButton.textContent = "Installed";
+                    installButton.disabled = true;
+                    installButton.style.display = "inline";
+                    installBoxText.innerHTML = "Install PWA: ";
+                } else {
+                    installButton.style.display = "none";
+                    if (navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome")) {
+                        installBoxText.innerHTML = "PWA's are supported on this browser, but prompt is not supported.<br> Please install manually";
+                        return;
+                    }
+                    if ('getInstalledRelatedApps' in navigator) {
+                        navigator.getInstalledRelatedApps().then((relatedApps) => {
+                            if (relatedApps.length > 0) {
+                                checkinstall(true);
+                                return;
+                            }
+                        });
+                    }
+                    installBoxText.innerHTML = "PWA is either already installed, or prompt is not supported on this browser.<br> Please install manually.<br>Note: PWA's are not supported in Incognito/Private mode.";
+                }
+                
+            }
+            document.addEventListener('visibilitychange', function() {
+                window.matchMedia('(display-mode: standalone)').addListener(event => {
+                    if (event.matches) {
+                        checkinstall(true);
+                    }
+                });
+            });
+        <\/script>
+    </body>
+</html>`;
+            
+            const newWin = window.open("about:blank", "_blank");
+            if (newWin) {
+                newWin.document.open();
+                newWin.document.write(emulatorHTML);
+                newWin.document.close();
+            }
+        }
+
+        // Emulator function
+        function openEmulator() {
+            const emulatorHTML = `<!DOCTYPE html>
+<html>
+    <head>
+        <title>EmulatorJS | Demo</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+        <link rel="apple-touch-icon" href="img/icon.png" />
+        <link rel="manifest" href="manifest.json" />
+        <meta name="theme-color" content="#000"/>
+        <style>
+            body, html {
+                height: 100%;
+                background-color: black;
+                color: white;
+            }
+
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+
+            body, #box, #top {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            #box {
+                color: #aaa;
+                height: 20em;
+                width: 30em;
+                max-width: 80%;
+                max-height: 80%;
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                position: relative;
+                flex-direction: column;
+                transition-duration: 0.2s;
+                overflow: hidden;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 5px;
+                padding: 10px;
+                text-align: center;
+            }
+
+            #box:hover, #box[drag] {
+                border-color: #38f;
+                color: #ddd
+            }
+
+            #input {
+                cursor: pointer;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+            }
+
+            #display {
+                width: 100%;
+                height: 100%
+            }
+
+            select, button {
+                padding: 0 0.4em;
+                margin: 0.5em 0.1em;
+                width: 15em;
+                max-width: 100%;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 16px;
+                background-color: #444;
+                color: #aaa;
+                border-radius: 0.4em;
+                border: 1px solid #555;
+                cursor: pointer;
+                transition-duration: 0.2s;
+                vertical-align:top;
+                height: 2.5em;
+            }
+
+            select:hover, button:hover {
+                background-color: #666;
+                color: #ddd
+            }
+
+            .logo {
+                width: 130px;
+                height: 130px;
+                filter: drop-shadow(0 0 10px white);
+            }
+
+            #top, #version {
+                margin: 5px;
+            }
+
+            #version button {
+                fill: #aaa;
+                width: auto;
+                padding: 0.2em 0.3em;
+                text-align: center;
+                margin: 0.5em 0.1em;
+            }
+            #version svg {
+                margin-top: 0.05em;
+                margin-left: 0.05em;
+                width: 1.8em;
+            }
+            .popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 100%;
+                height: 100%;
+                z-index: 2000;
+                visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
+            .popup .content {
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                padding: 1em;
+                max-width: 80%;
+                max-height: 80%;
+                min-width: 30%;
+                width: min-content;
+                position: fixed;
+            }
+            .show {
+                visibility: visible;
+            }
+            .popup-overlay {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                visibility: hidden;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+                opacity: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            .show ~ .popup-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
+            .popup-animate .content {
+                -webkit-transform: translateX(-50%) translateY(-50%) scale(0.7);
+                -ms-transform: translateX(-50%) translateY(-50%) scale(0.7);
+                transform: translateX(-50%) translateY(-50%) scale(0.7);
+                opacity: 0;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            .show.popup-animate .content {
+                -webkit-transform: translateX(-50%) translateY(-50%) scale(1);
+                -ms-transform: translateX(-50%) translateY(-50%) scale(1);
+                transform: translateX(-50%) translateY(-50%) scale(1);
+                opacity: 1;
+            }
+            .popup .title, .popup .options p {
+                display: flex;
+                align-items: center;
+            }
+            .popup .options p {
+                margin: 1em 0;
+                font-size: 18px;
+            }
+            .popup .title h1 {
+                margin: 0 0 0.3em;
+                font-size: 48px;
+            }
+            .popup .options button {
+                width: auto;
+                padding: 0 0.5em;
+                font-weight: bold;
+                margin: 0 0.5em;
+                font-size: 14px;
+                border-radius: 0.4em;
+            }
+            .popup .bottom {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 1em;
+            }
+            #installbox {
+                display: inline-flex;
+                align-items: baseline;
+            }
+            #installboxtext {
+                margin-top: 0 !important;
+            }
+            button:disabled {
+                background-color: #666;
+                color: #aaa;
+                cursor: not-allowed;
+            }
+            .hide {
+                display: none !important;
+            }
+        <\\/style>
+    <\\/head>
+    <body>
+        <div id="top">
+            <h1>EmulatorJS Demo<\\/h1>
+            <img src="img/logo-light.png" alt="Logo" class="logo">
+        <\\/div>
+        <div id="box">
+            <input type="file" id="input">
+            Drag ROM file or click here
+        <\\/div>
+        <div id="version">
+            <select id="version-select"><\\/select>
+            <button id="download" class="hide" onclick="downloadversion()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 6.854-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5a.5.5 0 0 1 1 0v3.793l1.146-1.147a.5.5 0 0 1 .708.708"/>
+                <\\/svg>
+                <svg xmlns="http://www.w3.org/2000/svg"viewBox="0 0 16 16">
+                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 4.854-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                <\\/svg>
+            <\\/button>
+            <button id="settings" onclick="openSettings()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                <\\/svg>
+            <\\/button>
+        <\\/div>
+        <div id="popup-settings" class="popup popup-animate">
+            <div class="content">
+                <div class="title">
+                    <h1>Settings<\\/h1>
+                <\\/div>
+                <div class="options">
+                    <p id="offline-status">Offline Status: CHECKING<\\/p>
+                    <p>Offline Cores will be available soon.<\\/p>
+                    <p class="hide">Remove All Saved Versions: <button id="remove-version" onclick="removeallsaved()">Remove All<\\/button><\\/p>
+                    <div id="installbox"><p id="installboxtext">Install PWA:<\\/p> <button id="install">Install<\\/button><\\/div>
+                    <\\/div>
+                <div class="bottom">
+                    <button onclick="closeSettings()">Close<\\/button>
+                <\\/div>
+            <\\/div>
+        <\\/div>
+        <div class="popup-overlay"><\\/div>
+        <script>
+            if ("serviceWorker" in navigator) {
+                const req = navigator.serviceWorker.register("sw.js");
+                console.log(req);
+            };
+            loadJSON("/versions", (response) => {
+                if (!response) {
+                    loadJSON("https://cdn.emulatorjs.org/versions.json", resp => loadVersions(resp));
+                    document.getElementById("offline-status").textContent = "Offline Status: NOT INSTALLED";
+                } else {
+                    loadVersions(response);
+                    document.getElementById("offline-status").textContent = "Offline Status: READY";
+                }
+            });
+            function loadVersions(response) {
+                const version_select = document.getElementById("version-select");
+                var versions = JSON.parse(response);
+                version_select.innerHTML = "";
+                addOptions(version_select, versions.releases, versions.default, versions.github);
+                addOptions(version_select, versions.versions, versions.default);
+                version_select.addEventListener("change", () => {
+                    localStorage.setItem("version", version_select[version_select.selectedIndex].textContent);
+                    window.cdn = "https://cdn.emulatorjs.org/" + version_select[version_select.selectedIndex].value + "data/";
+                });
+            }
+            input.addEventListener("change", async () => {
+                const url = input.files[0];
+                const parts = input.files[0].name.split(".");
+
+                const core = await (async (ext) => {
+                    if (["fds", "nes", "unif", "unf"].includes(ext))
+                        return "nes"
+
+                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
+                        return "snes"
+
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
+
+                    if (["pce"].includes(ext))
+                        return "pce"
+
+                    if (["ngp", "ngc"].includes(ext))
+                        return "ngp"
+
+                    if (["ws", "wsc"].includes(ext))
+                        return "ws"
+
+                    if (["col", "cv"].includes(ext))
+                        return "coleco"
+
+                    if (["d64"].includes(ext))
+                        return "vice_x64"
+
+                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
+                        return ext
+
+                    return await new Promise(resolve => {
+                        const cores = {
+                            "Nintendo 64": "n64",
+                            "Nintendo Game Boy": "gb",
+                            "Nintendo Game Boy Advance": "gba",
+                            "Nintendo DS": "nds",
+                            "Nintendo Entertainment System": "nes",
+                            "Super Nintendo Entertainment System": "snes",
+                            "PlayStation": "psx",
+                            "Virtual Boy": "vb",
+                            "Sega Mega Drive": "segaMD",
+                            "Sega Master System": "segaMS",
+                            "Sega CD": "segaCD",
+                            "Atari Lynx": "lynx",
+                            "Sega 32X": "sega32x",
+                            "Atari Jaguar": "jaguar",
+                            "Sega Game Gear": "segaGG",
+                            "Sega Saturn": "segaSaturn",
+                            "Atari 7800": "atari7800",
+                            "Atari 2600": "atari2600",
+                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
+                            "NEC PC-FX": "pcfx",
+                            "SNK NeoGeo Pocket (Color)": "ngp",
+                            "Bandai WonderSwan (Color)": "ws",
+                            "ColecoVision": "coleco",
+                            "Commodore 64": "vice_x64",
+                            "PlayStation Portable": "psp"
+                        }
+
+                        const button = document.createElement("button")
+                        const select = document.createElement("select")
+
+                        for (const type in cores) {
+                            const option = document.createElement("option")
+
+                            option.value = cores[type]
+                            option.textContent = type
+                            select.appendChild(option)
+                        }
+
+                        button.onclick = () => resolve(select[select.selectedIndex].value)
+                        button.textContent = "Load game"
+                        box.innerHTML = ""
+
+                        box.appendChild(select)
+                        box.appendChild(button)
+                    })
+                })(parts.pop())
+
+                const div = document.createElement("div")
+                const sub = document.createElement("div")
+                const script = document.createElement("script")
+
+                sub.id = "game"
+                div.id = "display"
+
+                const top = document.getElementById("top");
+                const version = document.getElementById("version");
+                top.remove();
+                version.remove();
+                box.remove();
+                div.appendChild(sub)
+                document.body.appendChild(div)
+
+                const cdn = window.cdn || "https://cdn.emulatorjs.org/stable/data/"
+
+                window.EJS_player = "#game";
+                window.EJS_gameName = parts.shift();
+                window.EJS_biosUrl = "";
+                window.EJS_gameUrl = url;
+                window.EJS_core = core;
+                window.EJS_pathtodata = cdn;
+                window.EJS_startOnLoaded = true;
+                window.EJS_AdUrl = "https://ads.emulatorjs.org/";
+                if (core === "psp") {
+                    window.EJS_threads = true;
+                }
+                window.EJS_ready = function() {
+                    detectAdBlock("data:text/html;base64,PGh0bWw+PHN0eWxlPiNhZGJsb2Nre2JhY2tncm91bmQtY29sb3I6cmdiYSgwLDAsMCwuOCk7cG9zaXRpb246Zml4ZWQ7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTt0b3A6MDtsZWZ0OjA7ei1pbmRleDoxMDAwO3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiNmZmZ9Ym9keSxodG1se2JhY2tncm91bmQtY29sb3I6dHJhbnNwYXJlbnR9PC9zdHlsZT48Ym9keSBzdHlsZT0ibWFyZ2luOjAiPjxkaXYgaWQ9ImFkYmxvY2siPjxoMT5IaSBBZGJsb2NrIFVzZXIhPC9oMT48cD5BZHMgb24gdGhpcyBwYWdlIG1heSBjb21lIGFuZCBnbyBkZXBlbmRpbmcgb24gaG93IG1hbnkgcGVvcGxlIGFyZSBmdW5kaW5nIHRoaXMgcHJvamVjdC48YnI+WW91IGNhbiBoZWxwIGZ1bmQgdGhpcyBwcm9qZWN0IG9uPGEgaHJlZj0iaHR0cHM6Ly9wYXRyZW9uLmNvbS9FbXVsYXRvckpTIj5wYXRyZW9uPC9hPjwvcD48L2Rpdj48L2JvZHk+PC9odG1sPg==");
+                }
+                
+                script.src = cdn + "loader.js";
+                document.body.appendChild(script);
+            });
+
+            box.ondragover = () => box.setAttribute("drag", true);
+            box.ondragleave = () => box.removeAttribute("drag");
+
+            function detectAdBlock(url) {
+                let adBlockEnabled = false;
+                try {
+                    const adframe = document.querySelector('iframe[src="'+window.EJS_AdUrl+'"]');
+                    var adpage = adframe.contentWindow.document;
+                    window.EJS_AdUrl = adframe.src;
+                    if (!adpage) {
+                        adBlockEnabled = true;
+                    }
+                } catch (e) {
+                    adBlockEnabled = true;
+                }
+                if (adBlockEnabled) {
+                    window.EJS_adBlocked(url);
+                    
+                }
+            }
+
+            function loadJSON(url, callback) {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.open('GET', url, true);
+
+                xobj.onreadystatechange = function () {
+                    if (xobj.readyState === 4) {
+                        if (xobj.status === 200) {
+                            callback(xobj.responseText);
+                        } else {
+                            callback(null);
+                        }
+                    }
+                };
+
+                xobj.send();
+            }
+
+
+            function addOptions(select, options, default_option, github) {
+                for (const version in options) {
+                    const option = document.createElement("option");
+                    option.value = options[version];
+                    if (version == "stable"){
+                        option.textContent = "stable ("+github+")";
+                    } else {
+                        option.textContent = version;
+                    }
+                    if (localStorage.getItem("version") && localStorage.getItem("version") === version) {
+                        option.selected = true;
+                        window.cdn = "https://cdn.emulatorjs.org/" + option.value + "data/";
+                    } else if (version.includes(default_option)) {
+                        option.selected = true;
+                        window.cdn = "https://cdn.emulatorjs.org/" + option.value + "data/";
+                    }
+                    select.appendChild(option);
+                }
+            }
+
+            function openSettings() {
+                document.getElementById("popup-settings").classList.add("show");
+                if (localStorage.getItem("pwa") == "false") {
+                    checkinstall();
+                }
+            }
+
+            function closeSettings() {
+                document.getElementById("popup-settings").classList.remove("show");
+            }
+
+            let installPrompt = null;
+            const installButton = document.querySelector("#install");
+            const installBox = document.querySelector("#installbox");
+            const installBoxText = document.querySelector("#installboxtext");
+            localStorage.setItem("pwa", "false");
+
+            window.addEventListener("beforeinstallprompt", (event) => {
+                event.preventDefault();
+                installPrompt = event;
+                localStorage.setItem("pwa", "true");
+                installButton.textContent = "Install";
+                installButton.disabled = false;
+                console.log("Supported");
+            });
+            installButton.addEventListener("click", async () => {
+                if (!installPrompt) {
+                    return;
+                }
+                const result = await installPrompt.prompt();
+                console.log(\\\`Install prompt was: \\\${result.outcome}\\\`);
+                installPrompt = null;
+            });
+            function checkinstall(overide) {
+                console.log("Checking install");
+                if (navigator.userAgent.includes("Firefox") || (navigator.userAgent.includes("OPR") && !navigator.userAgent.includes("Mobile"))) {
+                    installButton.style.display = "none";
+                    installBoxText.innerHTML = "PWA's are not supported on this browser.";
+                    return;
+                }
+                if (window.matchMedia('(display-mode: standalone)').matches || overide) {
+                    installButton.textContent = "Installed";
+                    installButton.disabled = true;
+                    installButton.style.display = "inline";
+                    installBoxText.innerHTML = "Install PWA: ";
+                } else {
+                    installButton.style.display = "none";
+                    if (navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome")) {
+                        installBoxText.innerHTML = "PWA's are supported on this browser, but prompt is not supported.<br> Please install manually";
+                        return;
+                    }
+                    if ('getInstalledRelatedApps' in navigator) {
+                        navigator.getInstalledRelatedApps().then((relatedApps) => {
+                            if (relatedApps.length > 0) {
+                                checkinstall(true);
+                                return;
+                            }
+                        });
+                    }
+                    installBoxText.innerHTML = "PWA is either already installed, or prompt is not supported on this browser.<br> Please install manually.<br>Note: PWA's are not supported in Incognito/Private mode.";
+                }
+                
+            }
+            document.addEventListener('visibilitychange', function() {
+                window.matchMedia('(display-mode: standalone)').addListener(event => {
+                    if (event.matches) {
+                        checkinstall(true);
+                    }
+                });
+            });
+        <\\/script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"9320a1aa78578108","version":"2025.4.0-1-g37f21b1","r":1,"token":"192fdaadd1094fdfa2eb6daf77e04988","serverTiming":{"name":{"cfExtPri":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}}}' crossorigin="anonymous"><\\/script>
+<\\/body>
+<\\/html>
+`;
+            
+            const newWin = window.open("about:blank", "_blank");
+            if (newWin) {
+                newWin.document.open();
+                newWin.document.write(emulatorHTML);
+                newWin.document.close();
+            }
+        }
+
+        // Emulator function
+        function openEmulator() {
+            const emulatorHTML = `<!DOCTYPE html>
+<html>
+    <head>
+        <title>EmulatorJS | Demo</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+        <link rel="apple-touch-icon" href="img/icon.png" />
+        <link rel="manifest" href="manifest.json" />
+        <meta name="theme-color" content="#000"/>
+        <style>
+            body, html {
+                height: 100%;
+                background-color: black;
+                color: white;
+            }
+
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+
+            body, #box, #top {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            #box {
+                color: #aaa;
+                height: 20em;
+                width: 30em;
+                max-width: 80%;
+                max-height: 80%;
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                position: relative;
+                flex-direction: column;
+                transition-duration: 0.2s;
+                overflow: hidden;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 5px;
+                padding: 10px;
+                text-align: center;
+            }
+
+            #box:hover, #box[drag] {
+                border-color: #38f;
+                color: #ddd
+            }
+
+            #input {
+                cursor: pointer;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+            }
+
+            #display {
+                width: 100%;
+                height: 100%
+            }
+
+            select, button {
+                padding: 0 0.4em;
+                margin: 0.5em 0.1em;
+                width: 15em;
+                max-width: 100%;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 16px;
+                background-color: #444;
+                color: #aaa;
+                border-radius: 0.4em;
+                border: 1px solid #555;
+                cursor: pointer;
+                transition-duration: 0.2s;
+                vertical-align:top;
+                height: 2.5em;
+            }
+
+            select:hover, button:hover {
+                background-color: #666;
+                color: #ddd
+            }
+
+            .logo {
+                width: 130px;
+                height: 130px;
+                filter: drop-shadow(0 0 10px white);
+            }
+
+            #top, #version {
+                margin: 5px;
+            }
+
+            #version button {
+                fill: #aaa;
+                width: auto;
+                padding: 0.2em 0.3em;
+                text-align: center;
+                margin: 0.5em 0.1em;
+            }
+            #version svg {
+                margin-top: 0.05em;
+                margin-left: 0.05em;
+                width: 1.8em;
+            }
+            .popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 100%;
+                height: 100%;
+                z-index: 2000;
+                visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
+            .popup .content {
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                padding: 1em;
+                max-width: 80%;
+                max-height: 80%;
+                min-width: 30%;
+                width: min-content;
+                position: fixed;
+            }
+            .show {
+                visibility: visible;
+            }
+            .popup-overlay {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                visibility: hidden;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+                opacity: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            .show ~ .popup-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
+            .popup-animate .content {
+                -webkit-transform: translateX(-50%) translateY(-50%) scale(0.7);
+                -ms-transform: translateX(-50%) translateY(-50%) scale(0.7);
+                transform: translateX(-50%) translateY(-50%) scale(0.7);
+                opacity: 0;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            .show.popup-animate .content {
+                -webkit-transform: translateX(-50%) translateY(-50%) scale(1);
+                -ms-transform: translateX(-50%) translateY(-50%) scale(1);
+                transform: translateX(-50%) translateY(-50%) scale(1);
+                opacity: 1;
+            }
+            .popup .title, .popup .options p {
+                display: flex;
+                align-items: center;
+            }
+            .popup .options p {
+                margin: 1em 0;
+                font-size: 18px;
+            }
+            .popup .title h1 {
+                margin: 0 0 0.3em;
+                font-size: 48px;
+            }
+            .popup .options button {
+                width: auto;
+                padding: 0 0.5em;
+                font-weight: bold;
+                margin: 0 0.5em;
+                font-size: 14px;
+                border-radius: 0.4em;
+            }
+            .popup .bottom {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 1em;
+            }
+            #installbox {
+                display: inline-flex;
+                align-items: baseline;
+            }
+            #installboxtext {
+                margin-top: 0 !important;
+            }
+            button:disabled {
+                background-color: #666;
+                color: #aaa;
+                cursor: not-allowed;
+            }
+            .hide {
+                display: none !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="top">
+            <h1>EmulatorJS Demo</h1>
+            <img src="img/logo-light.png" alt="Logo" class="logo">
+        </div>
+        <div id="box">
+            <input type="file" id="input">
+            Drag ROM file or click here
+        </div>
+        <div id="version">
+            <select id="version-select"></select>
+            <button id="download" class="hide" onclick="downloadversion()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 6.854-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5a.5.5 0 0 1 1 0v3.793l1.146-1.147a.5.5 0 0 1 .708.708"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg"viewBox="0 0 16 16">
+                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 4.854-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                </svg>
+            </button>
+            <button id="settings" onclick="openSettings()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                </svg>
+            </button>
+        </div>
+        <div id="popup-settings" class="popup popup-animate">
+            <div class="content">
+                <div class="title">
+                    <h1>Settings</h1>
+                </div>
+                <div class="options">
+                    <p id="offline-status">Offline Status: CHECKING</p>
+                    <p>Offline Cores will be available soon.</p>
+                    <p class="hide">Remove All Saved Versions: <button id="remove-version" onclick="removeallsaved()">Remove All</button></p>
+                    <div id="installbox"><p id="installboxtext">Install PWA:</p> <button id="install">Install</button></div>
+                    </div>
+                <div class="bottom">
+                    <button onclick="closeSettings()">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="popup-overlay"></div>
+        <script>
+            if ("serviceWorker" in navigator) {
+                const req = navigator.serviceWorker.register("sw.js");
+                console.log(req);
+            };
+            loadJSON("/versions", (response) => {
+                if (!response) {
+                    loadJSON("https://cdn.emulatorjs.org/versions.json", resp => loadVersions(resp));
+                    document.getElementById("offline-status").textContent = "Offline Status: NOT INSTALLED";
+                } else {
+                    loadVersions(response);
+                    document.getElementById("offline-status").textContent = "Offline Status: READY";
+                }
+            });
+            function loadVersions(response) {
+                const version_select = document.getElementById("version-select");
+                var versions = JSON.parse(response);
+                version_select.innerHTML = "";
+                addOptions(version_select, versions.releases, versions.default, versions.github);
+                addOptions(version_select, versions.versions, versions.default);
+                version_select.addEventListener("change", () => {
+                    localStorage.setItem("version", version_select[version_select.selectedIndex].textContent);
+                    window.cdn = "https://cdn.emulatorjs.org/" + version_select[version_select.selectedIndex].value + "data/";
+                });
+            }
+            input.addEventListener("change", async () => {
+                const url = input.files[0];
+                const parts = input.files[0].name.split(".");
+
+                const core = await (async (ext) => {
+                    if (["fds", "nes", "unif", "unf"].includes(ext))
+                        return "nes"
+
+                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
+                        return "snes"
+
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
+
+                    if (["pce"].includes(ext))
+                        return "pce"
+
+                    if (["ngp", "ngc"].includes(ext))
+                        return "ngp"
+
+                    if (["ws", "wsc"].includes(ext))
+                        return "ws"
+
+                    if (["col", "cv"].includes(ext))
+                        return "coleco"
+
+                    if (["d64"].includes(ext))
+                        return "vice_x64"
+
+                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
+                        return ext
+
+                    return await new Promise(resolve => {
+                        const cores = {
+                            "Nintendo 64": "n64",
+                            "Nintendo Game Boy": "gb",
+                            "Nintendo Game Boy Advance": "gba",
+                            "Nintendo DS": "nds",
+                            "Nintendo Entertainment System": "nes",
+                            "Super Nintendo Entertainment System": "snes",
+                            "PlayStation": "psx",
+                            "Virtual Boy": "vb",
+                            "Sega Mega Drive": "segaMD",
+                            "Sega Master System": "segaMS",
+                            "Sega CD": "segaCD",
+                            "Atari Lynx": "lynx",
+                            "Sega 32X": "sega32x",
+                            "Atari Jaguar": "jaguar",
+                            "Sega Game Gear": "segaGG",
+                            "Sega Saturn": "segaSaturn",
+                            "Atari 7800": "atari7800",
+                            "Atari 2600": "atari2600",
+                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
+                            "NEC PC-FX": "pcfx",
+                            "SNK NeoGeo Pocket (Color)": "ngp",
+                            "Bandai WonderSwan (Color)": "ws",
+                            "ColecoVision": "coleco",
+                            "Commodore 64": "vice_x64",
+                            "PlayStation Portable": "psp"
+                        }
+
+                        const button = document.createElement("button")
+                        const select = document.createElement("select")
+
+                        for (const type in cores) {
+                            const option = document.createElement("option")
+
+                            option.value = cores[type]
+                            option.textContent = type
+                            select.appendChild(option)
+                        }
+
+                        button.onclick = () => resolve(select[select.selectedIndex].value)
+                        button.textContent = "Load game"
+                        box.innerHTML = ""
+
+                        box.appendChild(select)
+                        box.appendChild(button)
+                    })
+                })(parts.pop())
+
+                const div = document.createElement("div")
+                const sub = document.createElement("div")
+                const script = document.createElement("script")
+
+                sub.id = "game"
+                div.id = "display"
+
+                const top = document.getElementById("top");
+                const version = document.getElementById("version");
+                top.remove();
+                version.remove();
+                box.remove();
+                div.appendChild(sub)
+                document.body.appendChild(div)
+
+                const cdn = window.cdn || "https://cdn.emulatorjs.org/stable/data/"
+
+                window.EJS_player = "#game";
+                window.EJS_gameName = parts.shift();
+                window.EJS_biosUrl = "";
+                window.EJS_gameUrl = url;
+                window.EJS_core = core;
+                window.EJS_pathtodata = cdn;
+                window.EJS_startOnLoaded = true;
+                window.EJS_AdUrl = "https://ads.emulatorjs.org/";
+                if (core === "psp") {
+                    window.EJS_threads = true;
+                }
+                window.EJS_ready = function() {
+                    detectAdBlock("data:text/html;base64,PGh0bWw+PHN0eWxlPiNhZGJsb2Nre2JhY2tncm91bmQtY29sb3I6cmdiYSgwLDAsMCwuOCk7cG9zaXRpb246Zml4ZWQ7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTt0b3A6MDtsZWZ0OjA7ei1pbmRleDoxMDAwO3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiNmZmZ9Ym9keSxodG1se2JhY2tncm91bmQtY29sb3I6dHJhbnNwYXJlbnR9PC9zdHlsZT48Ym9keSBzdHlsZT0ibWFyZ2luOjAiPjxkaXYgaWQ9ImFkYmxvY2siPjxoMT5IaSBBZGJsb2NrIFVzZXIhPC9oMT48cD5BZHMgb24gdGhpcyBwYWdlIG1heSBjb21lIGFuZCBnbyBkZXBlbmRpbmcgb24gaG93IG1hbnkgcGVvcGxlIGFyZSBmdW5kaW5nIHRoaXMgcHJvamVjdC48YnI+WW91IGNhbiBoZWxwIGZ1bmQgdGhpcyBwcm9qZWN0IG9uPGEgaHJlZj0iaHR0cHM6Ly9wYXRyZW9uLmNvbS9FbXVsYXRvckpTIj5wYXRyZW9uPC9hPjwvcD48L2Rpdj48L2JvZHk+PC9odG1sPg==");
+                }
+                
+                script.src = cdn + "loader.js";
+                document.body.appendChild(script);
+            });
+
+            box.ondragover = () => box.setAttribute("drag", true);
+            box.ondragleave = () => box.removeAttribute("drag");
+
+            function detectAdBlock(url) {
+                let adBlockEnabled = false;
+                try {
+                    const adframe = document.querySelector('iframe[src="'+window.EJS_AdUrl+'"]');
+                    var adpage = adframe.contentWindow.document;
+                    window.EJS_AdUrl = adframe.src;
+                    if (!adpage) {
+                        adBlockEnabled = true;
+                    }
+                } catch (e) {
+                    adBlockEnabled = true;
+                }
+                if (adBlockEnabled) {
+                    window.EJS_adBlocked(url);
+                    
+                }
+            }
+
+            function loadJSON(url, callback) {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.open('GET', url, true);
+
+                xobj.onreadystatechange = function () {
+                    if (xobj.readyState === 4) {
+                        if (xobj.status === 200) {
+                            callback(xobj.responseText);
+                        } else {
+                            callback(null);
+                        }
+                    }
+                };
+
+                xobj.send();
+            }
+
+
+            function addOptions(select, options, default_option, github) {
+                for (const version in options) {
+                    const option = document.createElement("option");
+                    option.value = options[version];
+                    if (version == "stable"){
+                        option.textContent = "stable ("+github+")";
+                    } else {
+                        option.textContent = version;
+                    }
+                    if (localStorage.getItem("version") && localStorage.getItem("version") === version) {
+                        option.selected = true;
+                        window.cdn = "https://cdn.emulatorjs.org/" + option.value + "data/";
+                    } else if (version.includes(default_option)) {
+                        option.selected = true;
+                        window.cdn = "https://cdn.emulatorjs.org/" + option.value + "data/";
+                    }
+                    select.appendChild(option);
+                }
+            }
+
+            function openSettings() {
+                document.getElementById("popup-settings").classList.add("show");
+                if (localStorage.getItem("pwa") == "false") {
+                    checkinstall();
+                }
+            }
+
+            function closeSettings() {
+                document.getElementById("popup-settings").classList.remove("show");
+            }
+
+            let installPrompt = null;
+            const installButton = document.querySelector("#install");
+            const installBox = document.querySelector("#installbox");
+            const installBoxText = document.querySelector("#installboxtext");
+            localStorage.setItem("pwa", "false");
+
+            window.addEventListener("beforeinstallprompt", (event) => {
+                event.preventDefault();
+                installPrompt = event;
+                localStorage.setItem("pwa", "true");
+                installButton.textContent = "Install";
+                installButton.disabled = false;
+                console.log("Supported");
+            });
+            installButton.addEventListener("click", async () => {
+                if (!installPrompt) {
+                    return;
+                }
+                const result = await installPrompt.prompt();
+                console.log('Install prompt was: ' + result.outcome);
+                installPrompt = null;
+            });
+            function checkinstall(overide) {
+                console.log("Checking install");
+                if (navigator.userAgent.includes("Firefox") || (navigator.userAgent.includes("OPR") && !navigator.userAgent.includes("Mobile"))) {
+                    installButton.style.display = "none";
+                    installBoxText.innerHTML = "PWA's are not supported on this browser.";
+                    return;
+                }
+                if (window.matchMedia('(display-mode: standalone)').matches || overide) {
+                    installButton.textContent = "Installed";
+                    installButton.disabled = true;
+                    installButton.style.display = "inline";
+                    installBoxText.innerHTML = "Install PWA: ";
+                } else {
+                    installButton.style.display = "none";
+                    if (navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome")) {
+                        installBoxText.innerHTML = "PWA's are supported on this browser, but prompt is not supported.<br> Please install manually";
+                        return;
+                    }
+                    if ('getInstalledRelatedApps' in navigator) {
+                        navigator.getInstalledRelatedApps().then((relatedApps) => {
+                            if (relatedApps.length > 0) {
+                                checkinstall(true);
+                                return;
+                            }
+                        });
+                    }
+                    installBoxText.innerHTML = "PWA is either already installed, or prompt is not supported on this browser.<br> Please install manually.<br>Note: PWA's are not supported in Incognito/Private mode.";
+                }
+                
+            }
+            document.addEventListener('visibilitychange', function() {
+                window.matchMedia('(display-mode: standalone)').addListener(event => {
+                    if (event.matches) {
+                        checkinstall(true);
+                    }
+                });
+            });
+        <\/script>
+    </body>
+</html>`;
+            
+            const newWin = window.open("about:blank", "_blank");
+            if (newWin) {
+                newWin.document.open();
+                newWin.document.write(emulatorHTML);
+                newWin.document.close();
+            }
+        }
+
+        // Favorites and Recent functionality
+        function toggleFavorite(file, starElement) {
+            let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const index = favorites.indexOf(file);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
+                starElement.classList.remove('favorited');
+            } else {
+                favorites.push(file);
+                starElement.classList.add('favorited');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavorites();
+            
+            // Update all star icons for this file across the page
+            const allButtons = document.querySelectorAll('input[type="button"]');
+            allButtons.forEach(btn => {
+                if (btn.value === file) {
+                    const star = btn.parentElement.querySelector('.star-icon');
+                    if (star) {
+                        if (index > -1) {
+                            star.classList.remove('favorited');
+                        } else {
+                            star.classList.add('favorited');
+                        }
+                    }
+                }
+            });
+        }
+
+        function addToRecent(file) {
+            let recent = JSON.parse(localStorage.getItem('recent') || '[]');
+            recent = recent.filter(f => f !== file);
+            recent.unshift(file);
+            recent = recent.slice(0, 10); // Keep only last 10
+            localStorage.setItem('recent', JSON.stringify(recent));
+            updateRecent();
+        }
+
+        function createGameButton(file, showStar = true) {
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.width = '100%';
+            wrapper.style.maxWidth = '700px';
+            
+            const btn = document.createElement('input');
+            btn.type = 'button';
+            btn.value = file;
+            btn.className = showStar ? 'fav-button' : '';
+            
+            if (showStar) {
+                const star = document.createElement('span');
+                star.className = 'star-icon';
+                star.innerHTML = '★';
+                
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                if (favorites.includes(file)) {
+                    star.classList.add('favorited');
+                }
+                
+                star.onclick = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    toggleFavorite(file, star);
+                };
+                
+                // Prevent button click when clicking star area
+                star.onmousedown = (e) => {
+                    e.stopPropagation();
+                };
+                
+                star.onmouseup = (e) => {
+                    e.stopPropagation();
+                };
+                
+                wrapper.appendChild(star);
+            }
+            
+            btn.onclick = (e) => {
+                // Check if click was on the star
+                if (e.target.classList && e.target.classList.contains('star-icon')) {
+                    return;
+                }
+                
+                addToRecent(file);
+                
+                // Special handler for emulator
+                if (file === 'cl0emulator') {
+                    openEmulator();
+                    return;
+                }
+                
+                // Special handler for media player
+                if (file === 'cl0mediaplayer') {
+                    openMediaPlayer();
+                    return;
+                }
+                
+                function normalizeFileName(name) {
+                    if (name.includes('.') && name.lastIndexOf('.') > 0) return name;
+                    return name + '.html';
+                }
+                
+                const normalized = normalizeFileName(file);
+                const encoded = encodeURIComponent(normalized);
+                
+                fetch(`https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encoded}?t=${Date.now()}`)
+                    .then(response => response.text())
+                    .then(text => {
+                        const newWin = window.open("about:blank", "_blank");
+                        if (newWin) {
+                            newWin.document.open();
+                            newWin.document.write(text);
+                            newWin.document.close();
+                        }
+                    });
+            };
+            
+            wrapper.appendChild(btn);
+            return wrapper;
+        }
+
+        function updateFavorites() {
+            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const container = document.getElementById('favorites-container');
+            const section = document.getElementById('favorites-section');
+            
+            container.innerHTML = '';
+            
+            if (favorites.length === 0) {
+                section.style.display = 'none';
+            } else {
+                section.style.display = 'block';
+                favorites.forEach(file => {
+                    container.appendChild(createGameButton(file, true));
+                });
+            }
+        }
+
+        function updateRecent() {
+            const recent = JSON.parse(localStorage.getItem('recent') || '[]');
+            const container = document.getElementById('recent-container');
+            const section = document.getElementById('recent-section');
+            
+            container.innerHTML = '';
+            
+            if (recent.length === 0) {
+                section.style.display = 'none';
+            } else {
+                section.style.display = 'block';
+                recent.forEach(file => {
+                    container.appendChild(createGameButton(file, false));
+                });
+            }
+        }
+
+        // Load on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateFavorites();
+            updateRecent();
+            
+            // Clear recent button functionality
+            const clearRecentBtn = document.getElementById('clear-recent-btn');
+            if (clearRecentBtn) {
+                clearRecentBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to clear your recently played games?')) {
+                        localStorage.setItem('recent', JSON.stringify([]));
+                        updateRecent();
+                    }
+                });
+                
+                // Add hover effect
+                clearRecentBtn.addEventListener('mouseenter', () => {
+                    clearRecentBtn.style.background = 'rgba(255, 0, 0, 0.9)';
+                    clearRecentBtn.style.boxShadow = '0 0 20px #ff0000';
+                });
+                
+                clearRecentBtn.addEventListener('mouseleave', () => {
+                    clearRecentBtn.style.background = 'rgba(255, 0, 0, 0.6)';
+                    clearRecentBtn.style.boxShadow = 'none';
+                });
+            }
+            
+            // Clear favorites button functionality
+            const clearFavoritesBtn = document.getElementById('clear-favorites-btn');
+            if (clearFavoritesBtn) {
+                clearFavoritesBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to clear all your favorites?')) {
+                        localStorage.setItem('favorites', JSON.stringify([]));
+                        updateFavorites();
+                        // Update all star icons on the page
+                        document.querySelectorAll('.star-icon.favorited').forEach(star => {
+                            star.classList.remove('favorited');
+                        });
+                    }
+                });
+                
+                // Add hover effect
+                clearFavoritesBtn.addEventListener('mouseenter', () => {
+                    clearFavoritesBtn.style.background = 'rgba(255, 0, 0, 0.9)';
+                    clearFavoritesBtn.style.boxShadow = '0 0 20px #ff0000';
+                });
+                
+                clearFavoritesBtn.addEventListener('mouseleave', () => {
+                    clearFavoritesBtn.style.background = 'rgba(255, 0, 0, 0.6)';
+                    clearFavoritesBtn.style.boxShadow = 'none';
+                });
+            }
+        });
+
+        // Search functionality
+        const searchBox = document.getElementById('search-box');
+        searchBox.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const allButtons = document.querySelectorAll('.letter-section .buttons-container input[type="button"]');
+            const sections = document.querySelectorAll('.letter-section');
+
+            allButtons.forEach(button => {
+                const fileName = button.value.toLowerCase();
+                const wrapper = button.parentElement;
+                if (fileName.includes(searchTerm)) {
+                    wrapper.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none';
+                }
+            });
+
+            // Hide/show sections based on whether they have visible buttons
+            sections.forEach(section => {
+                const visibleWrappers = section.querySelectorAll('.buttons-container > div[style*="display: block"], .buttons-container > div:not([style*="display: none"])');
+                const hasVisibleButtons = Array.from(visibleWrappers).some(wrapper => {
+                    const btn = wrapper.querySelector('input[type="button"]');
+                    return btn && wrapper.style.display !== 'none';
+                });
+                
+                if (searchTerm === '') {
+                    section.style.display = 'block';
+                } else if (hasVisibleButtons) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+    <!-- Background Music Player -->
+    <div class="music-player">
+        <div class="music-control" id="musicControl">
+            <svg id="playIcon" viewBox="0 0 24 24" style="display: block;">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg id="pauseIcon" viewBox="0 0 24 24" style="display: none;">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+            </svg>
+        </div>
+    </div>
+    <audio id="bgMusic" loop>
+        <source src="assets/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Entry overlay functionality
+        const entryOverlay = document.getElementById('entryOverlay');
+        const blackScreen = document.getElementById('blackScreen');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const enterBtn = document.getElementById('enterBtn');
+        const flyingBee1 = document.getElementById('flyingBee1');
+        const flyingBee2 = document.getElementById('flyingBee2');
+        const flyingBee3 = document.getElementById('flyingBee3');
+        const flyingBee4 = document.getElementById('flyingBee4');
+        const flyingBee5 = document.getElementById('flyingBee5');
+        const flyingBee6 = document.getElementById('flyingBee6');
+        const flyingBee7 = document.getElementById('flyingBee7');
+        const flyingBee8 = document.getElementById('flyingBee8');
+        const flyingBee9 = document.getElementById('flyingBee9');
+        const flyingBee10 = document.getElementById('flyingBee10');
+        const flyingBee11 = document.getElementById('flyingBee11');
+        const flyingBee12 = document.getElementById('flyingBee12');
+        const musicControl = document.getElementById('musicControl');
+        const bgMusic = document.getElementById('bgMusic');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        enterBtn.addEventListener('click', function() {
+            // Hide overlay
+            entryOverlay.classList.add('hidden');
+            
+            // Start music
+            bgMusic.play();
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            musicControl.classList.add('playing');
+
+            // Trigger bee swarm animation
+            setTimeout(() => {
+                flyingBee1.classList.add('animate');
+                flyingBee2.classList.add('animate');
+                flyingBee3.classList.add('animate');
+                flyingBee4.classList.add('animate');
+                flyingBee5.classList.add('animate');
+                flyingBee6.classList.add('animate');
+                flyingBee7.classList.add('animate');
+                flyingBee8.classList.add('animate');
+                flyingBee9.classList.add('animate');
+                flyingBee10.classList.add('animate');
+                flyingBee11.classList.add('animate');
+                flyingBee12.classList.add('animate');
+                
+                // Start revealing the website as bees fly
+                blackScreen.classList.add('reveal');
+            }, 300);
+
+            // Trigger website construction halfway through (2 seconds into the 4 second slide)
+            setTimeout(() => {
+                // Build main content first
+                mainContent.classList.add('construct');
+                
+                // Build letter sections one by one
+                const letterSections = document.querySelectorAll('.letter-section');
+                letterSections.forEach((section, index) => {
+                    setTimeout(() => {
+                        section.classList.add('construct');
+                    }, 200 + (index * 30)); // Stagger each section
+                });
+                
+                // Build sidebar after main content
+                setTimeout(() => {
+                    sidebar.classList.add('construct');
+                }, 400);
+                
+                // Build sidebar buttons one by one
+                const sidebarButtons = document.querySelectorAll('.sidebar-btn');
+                sidebarButtons.forEach((btn, index) => {
+                    setTimeout(() => {
+                        btn.classList.add('construct');
+                    }, 500 + (index * 50)); // Stagger each button by 50ms
+                });
+                
+                // Build music player last
+                setTimeout(() => {
+                    musicControl.parentElement.classList.add('construct');
+                }, 1500);
+            }, 2300); // 300ms delay + 2000ms = halfway through 4s animation
+        });
+
+        musicControl.addEventListener('click', function() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                musicControl.classList.add('playing');
+            } else {
+                bgMusic.pause();
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                musicControl.classList.remove('playing');
+            }
+        });
+    </script>
+</body>
+</html>
